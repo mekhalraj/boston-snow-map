@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boston's Stormiest Month — Winter 2025–2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #080c18;
+  --panel:   #0f1624;
+  --panel2:  #141d2e;
+  --border:  rgba(91,192,250,0.12);
+  --text:    #dde8f5;
+  --muted:   #627a96;
+  --accent:  #5bc0fa;
+  --ice1:    #c8dff7;
+  --ice2:    #7ab4e8;
+  --ice3:    #2d7fd4;
+  --purple:  #a78bfa;
+  --amber:   #f59e0b;
+  --red:     #ef4444;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── NOISE TEXTURE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.35;
+}
+
+/* ── LAYOUT ── */
+.page { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(8,12,24,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--accent);
+}
+.nav-links { display: flex; gap: 28px; }
+.nav-links a {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--text); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 120px 0 80px;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 900px; height: 900px;
+  background: radial-gradient(circle, rgba(45,127,212,0.12) 0%, transparent 65%);
+  top: -200px; right: -300px;
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(91,192,250,0.07) 0%, transparent 65%);
+  bottom: 0; left: -100px;
+  pointer-events: none;
+}
+.hero-eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+  opacity: 0; animation: fadeUp .6s .2s forwards;
+}
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(42px, 7vw, 82px);
+  line-height: 1.04; font-weight: 700; color: #fff;
+  max-width: 820px;
+  opacity: 0; animation: fadeUp .7s .35s forwards;
+}
+.hero-title em { font-style: italic; color: var(--ice2); }
+.hero-sub {
+  margin-top: 24px;
+  font-size: 16px; color: var(--muted);
+  max-width: 600px; line-height: 1.8; font-weight: 300;
+  opacity: 0; animation: fadeUp .7s .5s forwards;
+}
+.hero-stats {
+  display: flex; gap: 0; margin-top: 56px; flex-wrap: wrap;
+  border: 1px solid var(--border); border-radius: 12px;
+  background: var(--panel); overflow: hidden;
+  max-width: 780px;
+  opacity: 0; animation: fadeUp .7s .65s forwards;
+}
+.stat-item {
+  flex: 1; min-width: 140px;
+  padding: 28px 32px;
+  border-right: 1px solid var(--border);
+  position: relative;
+}
+.stat-item:last-child { border-right: none; }
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 46px; color: #fff; line-height: 1;
+  display: flex; align-items: flex-start; gap: 2px;
+}
+.stat-unit { font-size: 20px; color: var(--ice2); margin-top: 4px; font-weight: 400; }
+.stat-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); margin-top: 8px;
+}
+.scroll-hint {
+  margin-top: 56px;
+  display: flex; align-items: center; gap: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0; animation: fadeUp .7s .85s forwards;
+}
+.scroll-line {
+  width: 40px; height: 1px; background: var(--border);
+  position: relative; overflow: hidden;
+}
+.scroll-line::after {
+  content: ''; position: absolute;
+  width: 20px; height: 1px; background: var(--accent);
+  animation: scrollSlide 2s infinite;
+}
+@keyframes scrollSlide {
+  0% { left: -20px; } 100% { left: 40px; }
+}
+
+/* ── SECTION HEADER ── */
+.section-header { margin-bottom: 32px; }
+.section-eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 12px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(26px, 3.5vw, 38px); color: #fff; line-height: 1.15;
+}
+.section-title em { font-style: italic; color: var(--ice2); }
+.section-sub {
+  font-size: 14px; color: var(--muted); max-width: 620px;
+  margin-top: 10px; line-height: 1.75;
+}
+
+/* ── DIVIDER ── */
+.section-divider {
+  width: 100%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border) 20%, var(--border) 80%, transparent);
+  margin: 72px 0 64px;
+}
+
+/* ── STORM SELECTOR ── */
+.storm-grid {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px;
+}
+.storm-card {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px 20px;
+  cursor: pointer; transition: all .18s ease;
+  min-width: 120px; user-select: none;
+}
+.storm-card:hover { border-color: rgba(91,192,250,0.4); background: var(--panel2); }
+.storm-card.active {
+  border-color: var(--accent);
+  background: rgba(91,192,250,0.06);
+  box-shadow: 0 0 20px rgba(91,192,250,0.08);
+}
+.storm-card.hero { background: rgba(45,127,212,0.08); }
+.storm-card.hero.active { border-color: var(--accent); }
+.s-date {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 6px;
+}
+.s-inches {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px; color: #fff; line-height: 1;
+}
+.s-inches .s-unit { font-size: 14px; color: var(--ice2); font-family: 'IBM Plex Sans', sans-serif; }
+.s-meta { font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+/* ── MAP CONTROLS ── */
+.map-controls {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0 16px; flex-wrap: wrap; gap: 12px;
+}
+.legend { display: flex; align-items: center; gap: 12px; }
+.legend-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted);
+}
+.legend-bar {
+  width: 160px; height: 7px; border-radius: 4px;
+  background: linear-gradient(90deg, #0d1a33, #1a3d7a, #2d7fd4, #5bc0fa, #a78bfa, #dbeafe);
+}
+.legend-ticks {
+  display: flex; justify-content: space-between; width: 160px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px; color: var(--muted); margin-top: 3px;
+}
+.plow-toggle {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 16px;
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 7px; cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; letter-spacing: .06em; color: var(--text);
+  transition: all .18s;
+  user-select: none;
+}
+.plow-toggle:hover { border-color: rgba(245,158,11,0.4); }
+.plow-toggle.on { border-color: var(--amber); background: rgba(245,158,11,0.06); }
+.plow-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+.plow-check { width: 14px; height: 14px; border: 1px solid var(--border); border-radius: 3px; display: flex; align-items: center; justify-content: center; transition: all .18s; }
+.plow-toggle.on .plow-check { background: var(--amber); border-color: var(--amber); }
+.plow-check-inner { width: 7px; height: 7px; background: var(--bg); clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%); opacity: 0; transition: opacity .18s; }
+.plow-toggle.on .plow-check-inner { opacity: 1; }
+
+/* ── MAP ── */
+#map {
+  width: 100%; height: 620px;
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.maplibregl-popup-content {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* ── CHART SECTION ── */
+.chart-wrap { overflow-x: auto; }
+#hist-chart { display: block; }
+
+/* ── METHODOLOGY ── */
+.method-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  margin-top: 8px;
+}
+.method-card {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 10px; padding: 24px 28px;
+}
+.method-card-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 10px;
+}
+.method-card p {
+  font-size: 13px; color: var(--muted); line-height: 1.75;
+}
+
+/* ── CTA ── */
+.cta-wrap {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 44px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 24px;
+  position: relative; overflow: hidden;
+}
+.cta-wrap::before {
+  content: '';
+  position: absolute; top: -60px; right: -60px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(91,192,250,0.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+.cta-left {}
+.cta-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; color: #fff;
+}
+.cta-role {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); margin-top: 6px;
+}
+.cta-desc { font-size: 14px; color: var(--muted); margin-top: 10px; max-width: 440px; line-height: 1.7; }
+.cta-link {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 28px;
+  background: var(--accent); color: var(--bg);
+  border-radius: 8px; text-decoration: none;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px; font-weight: 500; letter-spacing: .08em;
+  transition: all .2s; flex-shrink: 0;
+}
+.cta-link:hover { background: var(--ice1); transform: translateY(-1px); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 28px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 80px; flex-wrap: wrap; gap: 12px;
+}
+.footer-left {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted);
+}
+.footer-sources { font-size: 11px; color: var(--muted); }
+.footer-sources a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .page { padding: 0 20px; }
+  nav { padding: 14px 20px; }
+  .hero-stats { flex-direction: column; }
+  .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
+  .stat-item:last-child { border-bottom: none; }
+  .method-grid { grid-template-columns: 1fr; }
+  .cta-wrap { padding: 28px 24px; }
+  footer { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">Boston Snow · Winter 2025–2026</div>
+  <div class="nav-links">
+    <a href="#map-section">Map</a>
+    <a href="#history-section">History</a>
+    <a href="#method-section">Methodology</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="page">
+    <div class="hero-eyebrow">Boston · Street-Level Snowfall Analysis · Winter 2025–2026</div>
+    <h1 class="hero-title">Boston's <em>stormiest<br>month</em> in a decade —<br>mapped street by street.</h1>
+    <p class="hero-sub">
+      The two prior winters combined for just 22.2 inches of snow.
+      Then January arrived. Two storms in six weeks buried the city under
+      nearly 46 inches — more than Boston typically sees in an entire season.
+    </p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">46<span class="stat-unit">in</span></div>
+        <div class="stat-label">Jan + Feb snowfall</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">21<span class="stat-unit">in</span></div>
+        <div class="stat-label">single storm peak</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">2</div>
+        <div class="stat-label">near-snowless winters before this</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">26k</div>
+        <div class="stat-label">street segments mapped</div>
+      </div>
+    </div>
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      Scroll to explore
+    </div>
+  </div>
+</section>
+
+<!-- MAP SECTION -->
+<section id="map-section" style="padding: 80px 0 0;">
+  <div class="page">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">Interactive Map</div>
+      <h2 class="section-title">Every street. <em>Every storm.</em></h2>
+      <p class="section-sub">Select a storm below to see snowfall intensity across Boston's 26,000+ street segments. Hover any street for exact measurements.</p>
+    </div>
+
+    <!-- Storm selector -->
+    <div class="storm-grid reveal" id="storm-selector"></div>
+
+    <!-- Map controls -->
+    <div class="map-controls reveal">
+      <div class="legend">
+        <div class="legend-label">Snowfall</div>
+        <div>
+          <div class="legend-bar"></div>
+          <div class="legend-ticks"><span>0"</span><span>5"</span><span>10"</span><span>15"</span><span>20"+</span></div>
+        </div>
+      </div>
+      <div class="plow-toggle" id="plow-toggle">
+        <div class="plow-dot"></div>
+        <div class="plow-check"><div class="plow-check-inner"></div></div>
+        Show plow routes
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div id="map" class="reveal"></div>
+  </div>
+</section>
+
+<!-- HISTORY SECTION -->
+<section id="history-section" style="padding: 0;">
+  <div class="page">
+    <div class="section-divider"></div>
+    <div class="section-header reveal">
+      <div class="section-eyebrow">Historical Context</div>
+      <h2 class="section-title">How does this winter <em>rank?</em></h2>
+      <p class="section-sub">Seasonal snowfall at Boston Logan Airport, 1980–2026. After back-to-back drought winters, January and February 2026 outpaced the prior two full seasons combined.</p>
+    </div>
+    <div class="chart-wrap reveal">
+      <svg id="hist-chart"></svg>
+    </div>
+  </div>
+</section>
+
+<!-- METHODOLOGY SECTION -->
+<section id="method-section" style="padding: 0;">
+  <div class="page">
+    <div class="section-divider"></div>
+    <div class="section-header reveal">
+      <div class="section-eyebrow">Methodology</div>
+      <h2 class="section-title">How this was <em>built.</em></h2>
+    </div>
+    <div class="method-grid reveal">
+      <div class="method-card">
+        <div class="method-card-title">Data Sources</div>
+        <p><strong style="color:var(--text)">CoCoRaHS</strong> — 27 volunteer observer stations across Boston metro (7 zero-reading stations excluded). Daily NewSnowDepth measurements, Oct 2025 – Mar 2026.<br><br>
+        <strong style="color:var(--text)">NOAA GHCN Daily</strong> — Boston Logan Airport (USW00014739). Historical seasonal totals 1980–2026.<br><br>
+        <strong style="color:var(--text)">OpenStreetMap</strong> — Street geometry via osmnx Python library.</p>
+      </div>
+      <div class="method-card">
+        <div class="method-card-title">Spatial Interpolation</div>
+        <p>Street-level snowfall is estimated using <strong style="color:var(--text)">Inverse Distance Weighting (IDW)</strong> with power=2, k=8 nearest neighbors. Each of the 26,064 street segment midpoints is assigned a snowfall estimate based on a weighted average of the 8 nearest CoCoRaHS stations — closer stations carry proportionally greater weight.<br><br>
+        Plow priority is derived from road classification (major → secondary → residential) where City of Boston open data was unavailable.</p>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- CTA -->
+    <div class="cta-wrap reveal">
+      <div class="cta-left">
+        <div class="cta-name">Mekhal Kasiri</div>
+        <div class="cta-role">Data &amp; Analytics · Systems Analyst · Boston, MA</div>
+        <p class="cta-desc">6+ years in data engineering, analytics, and AI/ML. Built this project end-to-end — from NOAA API pipeline to spatial interpolation to this visualization. Open to new opportunities.</p>
+      </div>
+      <a class="cta-link" href="https://www.linkedin.com/in/YOUR_LINKEDIN_HANDLE" target="_blank">
+        Connect on LinkedIn ↗
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">Boston Snow Map · Winter 2025–2026 · Built by Mekhal Kasiri</div>
+  <div class="footer-sources">
+    Data: <a href="https://cocorahs.org" target="_blank">CoCoRaHS</a> ·
+    <a href="https://www.ncdc.noaa.gov/cdo-web/" target="_blank">NOAA GHCN</a> ·
+    <a href="https://www.openstreetmap.org" target="_blank">OpenStreetMap</a>
+  </div>
+</footer>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const STORMS = [{"id":"storm_03","start_date":"2026-01-26","end_date":"2026-01-27","label":"Jan 26–27, 2026","avg_snow_in":17.8,"peak_snow_in":18.2,"n_days":2,"snow_field":"snow_storm_03"},{"id":"storm_06","start_date":"2026-02-21","end_date":"2026-02-24","label":"Feb 21–24, 2026","avg_snow_in":16.6,"peak_snow_in":21.0,"n_days":3,"snow_field":"snow_storm_06"},{"id":"storm_04","start_date":"2026-02-07","end_date":"2026-02-08","label":"Feb 7–8, 2026","avg_snow_in":5.3,"peak_snow_in":8.0,"n_days":2,"snow_field":"snow_storm_04"},{"id":"storm_02","start_date":"2026-01-19","end_date":"2026-01-19","label":"Jan 19, 2026","avg_snow_in":4.7,"peak_snow_in":6.4,"n_days":1,"snow_field":"snow_storm_02"},{"id":"storm_01","start_date":"2025-12-27","end_date":"2025-12-27","label":"Dec 27, 2025","avg_snow_in":2.6,"peak_snow_in":3.5,"n_days":1,"snow_field":"snow_storm_01"},{"id":"storm_05","start_date":"2026-02-11","end_date":"2026-02-11","label":"Feb 11, 2026","avg_snow_in":1.6,"peak_snow_in":2.5,"n_days":1,"snow_field":"snow_storm_05"},{"id":"storm_07","start_date":"2026-03-04","end_date":"2026-03-04","label":"Mar 4, 2026","avg_snow_in":1.4,"peak_snow_in":2.5,"n_days":1,"snow_field":"snow_storm_07"}];
+
+const HISTORICAL = [{"winter":"1980-81","start_year":1980,"snow_in":22.3,"is_current":false,"rank":32,"tier":"below_avg"},{"winter":"1981-82","start_year":1981,"snow_in":48.5,"is_current":false,"rank":14,"tier":"above_avg"},{"winter":"1982-83","start_year":1982,"snow_in":32.8,"is_current":false,"rank":23,"tier":"average"},{"winter":"1983-84","start_year":1983,"snow_in":43.0,"is_current":false,"rank":16,"tier":"average"},{"winter":"1984-85","start_year":1984,"snow_in":24.8,"is_current":false,"rank":31,"tier":"below_avg"},{"winter":"1985-86","start_year":1985,"snow_in":18.1,"is_current":false,"rank":35,"tier":"below_avg"},{"winter":"1986-87","start_year":1986,"snow_in":38.4,"is_current":false,"rank":20,"tier":"average"},{"winter":"1987-88","start_year":1987,"snow_in":52.6,"is_current":false,"rank":12,"tier":"above_avg"},{"winter":"1988-89","start_year":1988,"snow_in":15.2,"is_current":false,"rank":37,"tier":"below_avg"},{"winter":"1989-90","start_year":1989,"snow_in":38.7,"is_current":false,"rank":18,"tier":"average"},{"winter":"1990-91","start_year":1990,"snow_in":19.1,"is_current":false,"rank":34,"tier":"below_avg"},{"winter":"1991-92","start_year":1991,"snow_in":21.1,"is_current":false,"rank":33,"tier":"below_avg"},{"winter":"1992-93","start_year":1992,"snow_in":81.9,"is_current":false,"rank":5,"tier":"historic"},{"winter":"1993-94","start_year":1993,"snow_in":96.3,"is_current":false,"rank":3,"tier":"historic"},{"winter":"1994-95","start_year":1994,"snow_in":15.1,"is_current":false,"rank":38,"tier":"below_avg"},{"winter":"1995-96","start_year":1995,"snow_in":100.3,"is_current":false,"rank":2,"tier":"historic"},{"winter":"1996-97","start_year":1996,"snow_in":29.6,"is_current":false,"rank":25,"tier":"average"},{"winter":"1997-98","start_year":1997,"snow_in":25.7,"is_current":false,"rank":29,"tier":"below_avg"},{"winter":"1998-99","start_year":1998,"snow_in":36.4,"is_current":false,"rank":21,"tier":"average"},{"winter":"1999-00","start_year":1999,"snow_in":25.0,"is_current":false,"rank":30,"tier":"below_avg"},{"winter":"2001-02","start_year":2001,"snow_in":14.8,"is_current":false,"rank":40,"tier":"below_avg"},{"winter":"2002-03","start_year":2002,"snow_in":68.7,"is_current":false,"rank":7,"tier":"historic"},{"winter":"2003-04","start_year":2003,"snow_in":39.4,"is_current":false,"rank":17,"tier":"average"},{"winter":"2004-05","start_year":2004,"snow_in":86.7,"is_current":false,"rank":4,"tier":"historic"},{"winter":"2006-07","start_year":2006,"snow_in":16.7,"is_current":false,"rank":36,"tier":"below_avg"},{"winter":"2007-08","start_year":2007,"snow_in":51.2,"is_current":false,"rank":13,"tier":"above_avg"},{"winter":"2008-09","start_year":2008,"snow_in":66.0,"is_current":false,"rank":8,"tier":"historic"},{"winter":"2009-10","start_year":2009,"snow_in":35.7,"is_current":false,"rank":22,"tier":"average"},{"winter":"2010-11","start_year":2010,"snow_in":80.1,"is_current":false,"rank":6,"tier":"historic"},{"winter":"2011-12","start_year":2011,"snow_in":9.3,"is_current":false,"rank":43,"tier":"below_avg"},{"winter":"2012-13","start_year":2012,"snow_in":63.5,"is_current":false,"rank":9,"tier":"historic"},{"winter":"2013-14","start_year":2013,"snow_in":58.7,"is_current":false,"rank":10,"tier":"above_avg"},{"winter":"2014-15","start_year":2014,"snow_in":110.6,"is_current":false,"rank":1,"tier":"historic"},{"winter":"2015-16","start_year":2015,"snow_in":29.6,"is_current":false,"rank":26,"tier":"average"},{"winter":"2016-17","start_year":2016,"snow_in":46.4,"is_current":false,"rank":15,"tier":"above_avg"},{"winter":"2018-19","start_year":2018,"snow_in":27.4,"is_current":false,"rank":28,"tier":"below_avg"},{"winter":"2019-20","start_year":2019,"snow_in":15.1,"is_current":false,"rank":39,"tier":"below_avg"},{"winter":"2020-21","start_year":2020,"snow_in":38.5,"is_current":false,"rank":19,"tier":"average"},{"winter":"2021-22","start_year":2021,"snow_in":54.1,"is_current":false,"rank":11,"tier":"above_avg"},{"winter":"2022-23","start_year":2022,"snow_in":12.4,"is_current":false,"rank":41,"tier":"below_avg"},{"winter":"2023-24","start_year":2023,"snow_in":9.8,"is_current":false,"rank":42,"tier":"below_avg"},{"winter":"2024-25","start_year":2024,"snow_in":28.2,"is_current":false,"rank":27,"tier":"below_avg"},{"winter":"2025-26","start_year":2025,"snow_in":31.6,"is_current":true,"rank":24,"tier":"average"}];
+
+const MEAN_SNOW = 41.4;
+
+// ── SCROLL REVEAL ─────────────────────────────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── STORM SELECTOR ────────────────────────────────────────────────────────────
+let activeField = STORMS[0].snow_field;
+const selector = document.getElementById('storm-selector');
+
+// All Season card
+const allCard = document.createElement('div');
+allCard.className = 'storm-card';
+allCard.dataset.field = 'snow_seasonal';
+allCard.innerHTML = `<div class="s-date">Full Season</div><div class="s-inches">31.6<span class="s-unit">in</span></div><div class="s-meta">Oct 2025 – Mar 2026</div>`;
+selector.appendChild(allCard);
+
+STORMS.forEach((s, i) => {
+  const card = document.createElement('div');
+  card.className = `storm-card ${s.avg_snow_in >= 15 ? 'hero' : ''} ${i === 0 ? 'active' : ''}`;
+  card.dataset.field = s.snow_field;
+  card.innerHTML = `<div class="s-date">${s.label}</div><div class="s-inches">${s.avg_snow_in}<span class="s-unit">in</span></div><div class="s-meta">${s.peak_snow_in}in peak · ${s.n_days} day${s.n_days > 1 ? 's' : ''}</div>`;
+  selector.appendChild(card);
+});
+
+selector.querySelectorAll('.storm-card').forEach(card => {
+  card.addEventListener('click', () => {
+    selector.querySelectorAll('.storm-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    activeField = card.dataset.field;
+    updateMap();
+  });
+});
+
+// ── PLOW TOGGLE ───────────────────────────────────────────────────────────────
+let showPlow = false;
+const plowToggle = document.getElementById('plow-toggle');
+plowToggle.addEventListener('click', () => {
+  showPlow = !showPlow;
+  plowToggle.classList.toggle('on', showPlow);
+  if (map && map.getLayer('plow-routes')) {
+    map.setLayoutProperty('plow-routes', 'visibility', showPlow ? 'visible' : 'none');
+  }
+});
+
+// ── COLOR EXPRESSION ──────────────────────────────────────────────────────────
+function colorExpr(field) {
+  return ['interpolate', ['linear'], ['coalesce', ['get', field], 0],
+    0, '#0d1a33', 4, '#1a3d7a', 8, '#2d7fd4', 12, '#5bc0fa', 16, '#a78bfa', 20, '#dbeafe'];
+}
+function opacityExpr(field) {
+  return ['interpolate', ['linear'], ['coalesce', ['get', field], 0],
+    0, 0.15, 3, 0.55, 8, 0.82, 15, 1.0];
+}
+
+// ── MAP ───────────────────────────────────────────────────────────────────────
+let map;
+
+async function initMap() {
+  map = new maplibregl.Map({
+    container: 'map',
+    style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+    center: [-71.085, 42.338],
+    zoom: 12.2,
+    minZoom: 10,
+    maxZoom: 17,
+    attributionControl: false
+  });
+
+  map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+  map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+
+  await new Promise(resolve => map.on('load', resolve));
+
+  // Load streets GeoJSON from file
+  const resp = await fetch('boston_streets_snow.geojson');
+  const geojson = await resp.json();
+
+  map.addSource('streets', { type: 'geojson', data: geojson });
+
+  map.addLayer({
+    id: 'streets-snow', type: 'line', source: 'streets',
+    paint: {
+      'line-color': colorExpr(activeField),
+      'line-width': ['case',
+        ['==', ['get', 'road_type'], 'major'], 2.0,
+        ['==', ['get', 'road_type'], 'secondary'], 1.3,
+        0.7
+      ],
+      'line-opacity': opacityExpr(activeField)
+    }
+  });
+
+  map.addLayer({
+    id: 'plow-routes', type: 'line', source: 'streets',
+    filter: ['==', ['get', 'is_plow_route'], true],
+    paint: { 'line-color': '#f59e0b', 'line-width': 2.0, 'line-opacity': 0.75 },
+    layout: { visibility: 'none' }
+  });
+
+  // Tooltip
+  const popup = new maplibregl.Popup({
+    closeButton: false, closeOnClick: false
+  });
+
+  map.on('mousemove', 'streets-snow', (e) => {
+    map.getCanvas().style.cursor = 'crosshair';
+    const p = e.features[0].properties;
+    const snow = (p[activeField] || 0).toFixed(1);
+    const plow = p.is_plow_route ? '<div style="color:#f59e0b;font-size:10px;margin-top:4px">● Plow route</div>' : '';
+    popup.setLngLat(e.lngLat).setHTML(`
+      <div style="font-family:IBM Plex Sans,sans-serif;padding:12px 16px;background:#0f1624;border:1px solid rgba(91,192,250,0.2);border-radius:10px;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,0.6)">
+        <div style="font-family:IBM Plex Mono,monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#627a96;margin-bottom:4px">${p.neighborhood || ''}</div>
+        <div style="font-size:14px;color:#dde8f5;font-weight:500;margin-bottom:8px">${p.street_name || 'Street'}</div>
+        <div style="font-family:Playfair Display,serif;font-size:30px;color:#5bc0fa;line-height:1">${snow}<span style="font-size:14px;color:#7ab4e8;font-family:IBM Plex Sans,sans-serif">in</span></div>
+        ${plow}
+      </div>`).addTo(map);
+  });
+  map.on('mouseleave', 'streets-snow', () => {
+    map.getCanvas().style.cursor = '';
+    popup.remove();
+  });
+}
+
+function updateMap() {
+  if (!map || !map.getLayer('streets-snow')) return;
+  map.setPaintProperty('streets-snow', 'line-color', colorExpr(activeField));
+  map.setPaintProperty('streets-snow', 'line-opacity', opacityExpr(activeField));
+}
+
+initMap();
+
+// ── HISTORICAL CHART ──────────────────────────────────────────────────────────
+function buildChart() {
+  const years = HISTORICAL.slice().sort((a, b) => a.start_year - b.start_year);
+  const current = years.find(y => y.is_current);
+  const mean = MEAN_SNOW;
+
+  const containerWidth = document.querySelector('.chart-wrap').offsetWidth || 900;
+  const margin = { top: 24, right: 140, bottom: 16, left: 76 };
+  const width = Math.max(640, containerWidth) - margin.left - margin.right;
+  const barH = 17, gap = 4;
+  const height = years.length * (barH + gap);
+
+  const svg = d3.select('#hist-chart')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .style('font-family', "'IBM Plex Sans', sans-serif");
+
+  svg.selectAll('*').remove();
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const x = d3.scaleLinear().domain([0, d3.max(years, d => d.snow_in) * 1.06]).range([0, width]);
+  const y = d3.scaleBand().domain(years.map(d => d.winter)).range([0, height]).padding(0.18);
+
+  // Mean line
+  g.append('line')
+    .attr('x1', x(mean)).attr('x2', x(mean))
+    .attr('y1', -8).attr('y2', height + 8)
+    .attr('stroke', 'rgba(91,192,250,0.25)').attr('stroke-width', 1).attr('stroke-dasharray', '4,3');
+  g.append('text')
+    .attr('x', x(mean) + 5).attr('y', -10)
+    .attr('fill', 'rgba(91,192,250,0.45)').attr('font-size', 9)
+    .attr('font-family', "'IBM Plex Mono', monospace")
+    .text(`avg ${mean}in`);
+
+  // Bars
+  const rows = g.selectAll('.bar-row').data(years).join('g')
+    .attr('transform', d => `translate(0,${y(d.winter)})`);
+
+  rows.append('rect')
+    .attr('width', 0).attr('height', y.bandwidth()).attr('rx', 2)
+    .attr('fill', d => {
+      if (d.is_current) return '#5bc0fa';
+      if (d.tier === 'historic') return '#3a7fd4';
+      if (d.tier === 'above_avg') return '#2a5fa8';
+      if (d.tier === 'average') return '#1a3d7a';
+      return '#0f2550';
+    })
+    .attr('opacity', d => d.is_current ? 1 : [2022,2023].includes(d.start_year) ? 0.85 : 0.65)
+    .transition().duration(600).delay((d, i) => i * 8)
+    .attr('width', d => x(d.snow_in));
+
+  // Labels
+  rows.filter(d => d.is_current).append('text')
+    .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
+    .attr('fill', '#5bc0fa').attr('font-size', 11).attr('font-weight', '500')
+    .attr('font-family', "'IBM Plex Mono', monospace")
+    .text(d => `${d.snow_in}in  ← this winter`);
+
+  rows.filter(d => d.rank === 1).append('text')
+    .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
+    .attr('fill', '#c8dff7').attr('font-size', 10)
+    .attr('font-family', "'IBM Plex Mono', monospace")
+    .text(d => `${d.snow_in}in — all-time record`);
+
+  rows.filter(d => [2,3].includes(d.rank)).append('text')
+    .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
+    .attr('fill', '#7ab4e8').attr('font-size', 10)
+    .attr('font-family', "'IBM Plex Mono', monospace")
+    .text(d => `${d.snow_in}in  #${d.rank} all-time`);
+
+  rows.filter(d => [2022,2023].includes(d.start_year)).append('text')
+    .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
+    .attr('fill', '#ef4444').attr('font-size', 10)
+    .attr('font-family', "'IBM Plex Mono', monospace")
+    .text(d => `${d.snow_in}in`);
+
+  // Drought bracket
+  const dYears = years.filter(d => [2022,2023].includes(d.start_year));
+  if (dYears.length === 2) {
+    const y1 = y(dYears[0].winter), y2 = y(dYears[1].winter) + y.bandwidth();
+    g.append('rect').attr('x',-5).attr('y',y1-2).attr('width',3).attr('height',y2-y1+4)
+      .attr('fill','#ef4444').attr('rx',2).attr('opacity',0.7);
+    g.append('text').attr('x',-9).attr('y',(y1+y2)/2+4)
+      .attr('fill','#ef4444').attr('font-size',9).attr('text-anchor','end')
+      .attr('font-family',"'IBM Plex Mono', monospace").text('drought');
+  }
+
+  // Y axis
+  g.append('g').call(d3.axisLeft(y).tickSize(0).tickPadding(8)).select('.domain').remove();
+  g.selectAll('.tick text')
+    .attr('fill', d => d === current.winter ? '#5bc0fa' : [2022,2023].map(y=>`${y}-${String(y+1).slice(2)}`).includes(d) ? '#ef4444' : '#4a6280')
+    .attr('font-size', 9).attr('font-family', "'IBM Plex Mono', monospace");
+}
+
+// Build chart on load, rebuild on resize
+window.addEventListener('load', buildChart);
+window.addEventListener('resize', buildChart);
+</script>
+</body>
+</html>
