@@ -676,7 +676,12 @@ async function initMap() {
     id: 'streets-hover', type: 'line', source: 'streets',
     paint: {
       'line-color': 'transparent',
-      'line-width': 28,
+      'line-width': ['interpolate', ['linear'], ['zoom'],
+        10, 8,
+        12, 16,
+        14, 28,
+        16, 40
+      ],
       'line-opacity': 0
     }
   });
