@@ -13,19 +13,19 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:      #111314;
-  --panel:   #1a1c1e;
-  --panel2:  #212426;
-  --border:  rgba(220,230,240,0.10);
-  --text:    #e8ecf0;
-  --muted:   #8a9aaa;
-  --accent:  #a8c8e8;
-  --ice1:    #d4e8f4;
-  --ice2:    #b0cfe8;
-  --ice3:    #7aafd4;
-  --purple:  #c8b8f0;
-  --amber:   #f0b84a;
-  --red:     #e85050;
+  --bg:      #1c2026;
+  --panel:   #252b33;
+  --panel2:  #2c3340;
+  --border:  rgba(180,200,220,0.12);
+  --text:    #d8e4f0;
+  --muted:   #7a90a8;
+  --accent:  #6aacdc;
+  --ice1:    #c0d8f0;
+  --ice2:    #8abce0;
+  --ice3:    #5a9ed0;
+  --purple:  #a090d8;
+  --amber:   #e0a030;
+  --red:     #d05050;
 }
 
 html { scroll-behavior: smooth; }
@@ -47,7 +47,7 @@ body {
 /* ── NAV ── */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(14,16,18,0.90);
+  background: rgba(28,32,38,0.92);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   padding: 14px 40px;
@@ -78,7 +78,7 @@ nav {
   content: '';
   position: absolute;
   width: 900px; height: 900px;
-  background: radial-gradient(circle, rgba(80,120,160,0.10) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(80,130,180,0.10) 0%, transparent 65%);
   top: -200px; right: -300px;
   pointer-events: none;
 }
@@ -86,7 +86,7 @@ nav {
   content: '';
   position: absolute;
   width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(140,180,220,0.07) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(80,130,180,0.07) 0%, transparent 65%);
   bottom: 0; left: -100px;
   pointer-events: none;
 }
@@ -204,10 +204,10 @@ nav {
 .storm-card:hover { border-color: rgba(91,192,250,0.4); background: var(--panel2); }
 .storm-card.active {
   border-color: var(--accent);
-  background: rgba(140,180,220,0.06);
-  box-shadow: 0 0 20px rgba(140,180,220,0.08);
+  background: rgba(60,100,140,0.07);
+  box-shadow: 0 0 20px rgba(80,130,180,0.08);
 }
-.storm-card.hero { background: rgba(60,90,120,0.08); }
+.storm-card.hero { background: rgba(60,100,140,0.08); }
 .storm-card.hero.active { border-color: var(--accent); }
 .s-date {
   font-family: 'IBM Plex Mono', monospace;
@@ -234,7 +234,7 @@ nav {
 }
 .legend-bar {
   width: 160px; height: 7px; border-radius: 4px;
-  background: linear-gradient(90deg, #1a2a3a, #2a5080, #4a90c8, #a8c8e8, #d0e8f8, #f0f6ff);
+  background: linear-gradient(90deg, #0d1a2e, #1a4a7a, #3a82c0, #6aacdc, #a0d0f0, #dbeeff);
 }
 .legend-ticks {
   display: flex; justify-content: space-between; width: 160px;
@@ -307,7 +307,7 @@ nav {
   content: '';
   position: absolute; top: -60px; right: -60px;
   width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(140,180,220,0.07) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(80,130,180,0.07) 0%, transparent 65%);
   pointer-events: none;
 }
 .cta-left {}
@@ -324,7 +324,7 @@ nav {
 .cta-link {
   display: inline-flex; align-items: center; gap: 10px;
   padding: 14px 28px;
-  background: var(--accent); color: #111314;
+  background: var(--accent); color: #1c2026;
   border-radius: 8px; text-decoration: none;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 12px; font-weight: 500; letter-spacing: .08em;
@@ -374,7 +374,7 @@ footer {
 <body>
 
 <!-- SNOWFALL CANVAS -->
-<canvas id="snow-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;opacity:0.75"></canvas>
+<canvas id="snow-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;opacity:0.65"></canvas>
 <script>
 (function() {
   const canvas = document.getElementById('snow-canvas');
@@ -419,7 +419,7 @@ footer {
 
       ctx.beginPath();
       ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255,255,255,${f.opacity})`;
+      ctx.fillStyle = `rgba(210,228,248,${f.opacity})`;
       ctx.fill();
     });
     requestAnimationFrame(draw);
@@ -447,12 +447,12 @@ footer {
     <p class="hero-sub">
       The two prior winters combined for just 22.2 inches of snow.
       Then January arrived. Two storms in six weeks buried the city under
-      nearly 46 inches — more than Boston typically sees in an entire season.
+      nearly 35 inches — more than the prior two full winters combined.
     </p>
     <div class="hero-stats">
       <div class="stat-item">
-        <div class="stat-num">46<span class="stat-unit">in</span></div>
-        <div class="stat-label">Jan + Feb snowfall</div>
+        <div class="stat-num">62<span class="stat-unit">in</span></div>
+        <div class="stat-label">Season snowfall 2025–26</div>
       </div>
       <div class="stat-item">
         <div class="stat-num">21<span class="stat-unit">in</span></div>
@@ -463,7 +463,7 @@ footer {
         <div class="stat-label">near-snowless winters before this</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num">26k</div>
+        <div class="stat-num">41k</div>
         <div class="stat-label">street segments mapped</div>
       </div>
     </div>
@@ -480,7 +480,7 @@ footer {
     <div class="section-header reveal">
       <div class="section-eyebrow">Interactive Map</div>
       <h2 class="section-title">Every street. <em>Every storm.</em></h2>
-      <p class="section-sub">Select a storm below to see snowfall intensity across Boston's 26,000+ street segments. Hover any street for exact measurements.</p>
+      <p class="section-sub">Select a storm below to see snowfall intensity across Greater Boston's 41,000+ street segments. Hover any street for exact measurements.</p>
     </div>
 
     <!-- Storm selector -->
@@ -514,7 +514,7 @@ footer {
     <div class="section-header reveal">
       <div class="section-eyebrow">Historical Context</div>
       <h2 class="section-title">How does this winter <em>rank?</em></h2>
-      <p class="section-sub">Seasonal snowfall at Boston Logan Airport, 1980–2026. After back-to-back drought winters, January and February 2026 outpaced the prior two full seasons combined.</p>
+      <p class="section-sub">Seasonal snowfall at Boston Logan Airport, 1980–2026. After back-to-back drought winters, the 2025–26 season came in at 62.5in — ranking #10 all-time at Logan Airport.</p>
     </div>
     <div class="chart-wrap reveal">
       <svg id="hist-chart"></svg>
@@ -562,7 +562,7 @@ footer {
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-left">Boston Snow Map · Winter 2025–2026 · Built by Mekhal Raj</div>
+  <div class="footer-left">Greater Boston Snow Map · Winter 2025–2026 · Built by Mekhal Raj</div>
   <div class="footer-sources">
     Data: <a href="https://cocorahs.org" target="_blank">CoCoRaHS</a> ·
     <a href="https://www.ncdc.noaa.gov/cdo-web/" target="_blank">NOAA GHCN</a> ·
@@ -574,9 +574,9 @@ footer {
 // ── DATA ──────────────────────────────────────────────────────────────────────
 const STORMS = [{"id":"storm_03","start_date":"2026-01-26","end_date":"2026-01-27","label":"Jan 26–27, 2026","avg_snow_in":17.8,"peak_snow_in":18.2,"n_days":2,"snow_field":"snow_storm_03"},{"id":"storm_06","start_date":"2026-02-21","end_date":"2026-02-24","label":"Feb 21–24, 2026","avg_snow_in":16.6,"peak_snow_in":21.0,"n_days":3,"snow_field":"snow_storm_06"},{"id":"storm_04","start_date":"2026-02-07","end_date":"2026-02-08","label":"Feb 7–8, 2026","avg_snow_in":5.3,"peak_snow_in":8.0,"n_days":2,"snow_field":"snow_storm_04"},{"id":"storm_02","start_date":"2026-01-19","end_date":"2026-01-19","label":"Jan 19, 2026","avg_snow_in":4.7,"peak_snow_in":6.4,"n_days":1,"snow_field":"snow_storm_02"},{"id":"storm_01","start_date":"2025-12-27","end_date":"2025-12-27","label":"Dec 27, 2025","avg_snow_in":2.6,"peak_snow_in":3.5,"n_days":1,"snow_field":"snow_storm_01"},{"id":"storm_05","start_date":"2026-02-11","end_date":"2026-02-11","label":"Feb 11, 2026","avg_snow_in":1.6,"peak_snow_in":2.5,"n_days":1,"snow_field":"snow_storm_05"},{"id":"storm_07","start_date":"2026-03-04","end_date":"2026-03-04","label":"Mar 4, 2026","avg_snow_in":1.4,"peak_snow_in":2.5,"n_days":1,"snow_field":"snow_storm_07"}];
 
-const HISTORICAL = [{"winter":"1980-81","start_year":1980,"snow_in":22.3,"is_current":false,"rank":32,"tier":"below_avg"},{"winter":"1981-82","start_year":1981,"snow_in":48.5,"is_current":false,"rank":14,"tier":"above_avg"},{"winter":"1982-83","start_year":1982,"snow_in":32.8,"is_current":false,"rank":23,"tier":"average"},{"winter":"1983-84","start_year":1983,"snow_in":43.0,"is_current":false,"rank":16,"tier":"average"},{"winter":"1984-85","start_year":1984,"snow_in":24.8,"is_current":false,"rank":31,"tier":"below_avg"},{"winter":"1985-86","start_year":1985,"snow_in":18.1,"is_current":false,"rank":35,"tier":"below_avg"},{"winter":"1986-87","start_year":1986,"snow_in":38.4,"is_current":false,"rank":20,"tier":"average"},{"winter":"1987-88","start_year":1987,"snow_in":52.6,"is_current":false,"rank":12,"tier":"above_avg"},{"winter":"1988-89","start_year":1988,"snow_in":15.2,"is_current":false,"rank":37,"tier":"below_avg"},{"winter":"1989-90","start_year":1989,"snow_in":38.7,"is_current":false,"rank":18,"tier":"average"},{"winter":"1990-91","start_year":1990,"snow_in":19.1,"is_current":false,"rank":34,"tier":"below_avg"},{"winter":"1991-92","start_year":1991,"snow_in":21.1,"is_current":false,"rank":33,"tier":"below_avg"},{"winter":"1992-93","start_year":1992,"snow_in":81.9,"is_current":false,"rank":5,"tier":"historic"},{"winter":"1993-94","start_year":1993,"snow_in":96.3,"is_current":false,"rank":3,"tier":"historic"},{"winter":"1994-95","start_year":1994,"snow_in":15.1,"is_current":false,"rank":38,"tier":"below_avg"},{"winter":"1995-96","start_year":1995,"snow_in":100.3,"is_current":false,"rank":2,"tier":"historic"},{"winter":"1996-97","start_year":1996,"snow_in":29.6,"is_current":false,"rank":25,"tier":"average"},{"winter":"1997-98","start_year":1997,"snow_in":25.7,"is_current":false,"rank":29,"tier":"below_avg"},{"winter":"1998-99","start_year":1998,"snow_in":36.4,"is_current":false,"rank":21,"tier":"average"},{"winter":"1999-00","start_year":1999,"snow_in":25.0,"is_current":false,"rank":30,"tier":"below_avg"},{"winter":"2001-02","start_year":2001,"snow_in":14.8,"is_current":false,"rank":40,"tier":"below_avg"},{"winter":"2002-03","start_year":2002,"snow_in":68.7,"is_current":false,"rank":7,"tier":"historic"},{"winter":"2003-04","start_year":2003,"snow_in":39.4,"is_current":false,"rank":17,"tier":"average"},{"winter":"2004-05","start_year":2004,"snow_in":86.7,"is_current":false,"rank":4,"tier":"historic"},{"winter":"2006-07","start_year":2006,"snow_in":16.7,"is_current":false,"rank":36,"tier":"below_avg"},{"winter":"2007-08","start_year":2007,"snow_in":51.2,"is_current":false,"rank":13,"tier":"above_avg"},{"winter":"2008-09","start_year":2008,"snow_in":66.0,"is_current":false,"rank":8,"tier":"historic"},{"winter":"2009-10","start_year":2009,"snow_in":35.7,"is_current":false,"rank":22,"tier":"average"},{"winter":"2010-11","start_year":2010,"snow_in":80.1,"is_current":false,"rank":6,"tier":"historic"},{"winter":"2011-12","start_year":2011,"snow_in":9.3,"is_current":false,"rank":43,"tier":"below_avg"},{"winter":"2012-13","start_year":2012,"snow_in":63.5,"is_current":false,"rank":9,"tier":"historic"},{"winter":"2013-14","start_year":2013,"snow_in":58.7,"is_current":false,"rank":10,"tier":"above_avg"},{"winter":"2014-15","start_year":2014,"snow_in":110.6,"is_current":false,"rank":1,"tier":"historic"},{"winter":"2015-16","start_year":2015,"snow_in":29.6,"is_current":false,"rank":26,"tier":"average"},{"winter":"2016-17","start_year":2016,"snow_in":46.4,"is_current":false,"rank":15,"tier":"above_avg"},{"winter":"2018-19","start_year":2018,"snow_in":27.4,"is_current":false,"rank":28,"tier":"below_avg"},{"winter":"2019-20","start_year":2019,"snow_in":15.1,"is_current":false,"rank":39,"tier":"below_avg"},{"winter":"2020-21","start_year":2020,"snow_in":38.5,"is_current":false,"rank":19,"tier":"average"},{"winter":"2021-22","start_year":2021,"snow_in":54.1,"is_current":false,"rank":11,"tier":"above_avg"},{"winter":"2022-23","start_year":2022,"snow_in":12.4,"is_current":false,"rank":41,"tier":"below_avg"},{"winter":"2023-24","start_year":2023,"snow_in":9.8,"is_current":false,"rank":42,"tier":"below_avg"},{"winter":"2024-25","start_year":2024,"snow_in":28.2,"is_current":false,"rank":27,"tier":"below_avg"},{"winter":"2025-26","start_year":2025,"snow_in":31.6,"is_current":true,"rank":24,"tier":"average"}];
+const HISTORICAL = [{"winter": "1980-81", "start_year": 1980, "snow_in": 22.3, "is_current": false, "rank": 36, "tier": "below_avg"}, {"winter": "1981-82", "start_year": 1981, "snow_in": 48.5, "is_current": false, "rank": 14, "tier": "above_avg"}, {"winter": "1982-83", "start_year": 1982, "snow_in": 32.8, "is_current": false, "rank": 27, "tier": "average"}, {"winter": "1983-84", "start_year": 1983, "snow_in": 43.0, "is_current": false, "rank": 18, "tier": "average"}, {"winter": "1984-85", "start_year": 1984, "snow_in": 24.8, "is_current": false, "rank": 33, "tier": "below_avg"}, {"winter": "1985-86", "start_year": 1985, "snow_in": 18.1, "is_current": false, "rank": 39, "tier": "below_avg"}, {"winter": "1986-87", "start_year": 1986, "snow_in": 38.4, "is_current": false, "rank": 22, "tier": "average"}, {"winter": "1987-88", "start_year": 1987, "snow_in": 52.6, "is_current": false, "rank": 12, "tier": "above_avg"}, {"winter": "1988-89", "start_year": 1988, "snow_in": 15.2, "is_current": false, "rank": 41, "tier": "below_avg"}, {"winter": "1989-90", "start_year": 1989, "snow_in": 38.7, "is_current": false, "rank": 21, "tier": "average"}, {"winter": "1990-91", "start_year": 1990, "snow_in": 19.1, "is_current": false, "rank": 38, "tier": "below_avg"}, {"winter": "1991-92", "start_year": 1991, "snow_in": 21.1, "is_current": false, "rank": 37, "tier": "below_avg"}, {"winter": "1992-93", "start_year": 1992, "snow_in": 81.9, "is_current": false, "rank": 5, "tier": "historic"}, {"winter": "1993-94", "start_year": 1993, "snow_in": 96.3, "is_current": false, "rank": 3, "tier": "historic"}, {"winter": "1994-95", "start_year": 1994, "snow_in": 15.1, "is_current": false, "rank": 42, "tier": "below_avg"}, {"winter": "1995-96", "start_year": 1995, "snow_in": 100.3, "is_current": false, "rank": 2, "tier": "historic"}, {"winter": "1996-97", "start_year": 1996, "snow_in": 29.6, "is_current": false, "rank": 29, "tier": "below_avg"}, {"winter": "1997-98", "start_year": 1997, "snow_in": 25.7, "is_current": false, "rank": 32, "tier": "below_avg"}, {"winter": "1998-99", "start_year": 1998, "snow_in": 36.4, "is_current": false, "rank": 24, "tier": "average"}, {"winter": "1999-00", "start_year": 1999, "snow_in": 25.0, "is_current": false, "rank": 34, "tier": "below_avg"}, {"winter": "2000-01", "start_year": 2000, "snow_in": 46.0, "is_current": false, "rank": 16, "tier": "above_avg"}, {"winter": "2001-02", "start_year": 2001, "snow_in": 14.8, "is_current": false, "rank": 43, "tier": "below_avg"}, {"winter": "2002-03", "start_year": 2002, "snow_in": 68.7, "is_current": false, "rank": 8, "tier": "historic"}, {"winter": "2003-04", "start_year": 2003, "snow_in": 39.4, "is_current": false, "rank": 20, "tier": "average"}, {"winter": "2004-05", "start_year": 2004, "snow_in": 86.7, "is_current": false, "rank": 4, "tier": "historic"}, {"winter": "2005-06", "start_year": 2005, "snow_in": 40.0, "is_current": false, "rank": 19, "tier": "average"}, {"winter": "2006-07", "start_year": 2006, "snow_in": 16.7, "is_current": false, "rank": 40, "tier": "below_avg"}, {"winter": "2007-08", "start_year": 2007, "snow_in": 51.2, "is_current": false, "rank": 13, "tier": "above_avg"}, {"winter": "2008-09", "start_year": 2008, "snow_in": 66.0, "is_current": false, "rank": 9, "tier": "historic"}, {"winter": "2009-10", "start_year": 2009, "snow_in": 35.7, "is_current": false, "rank": 25, "tier": "average"}, {"winter": "2010-11", "start_year": 2010, "snow_in": 80.1, "is_current": false, "rank": 6, "tier": "historic"}, {"winter": "2011-12", "start_year": 2011, "snow_in": 9.3, "is_current": false, "rank": 46, "tier": "below_avg"}, {"winter": "2012-13", "start_year": 2012, "snow_in": 63.5, "is_current": false, "rank": 10, "tier": "historic"}, {"winter": "2013-14", "start_year": 2013, "snow_in": 58.7, "is_current": false, "rank": 11, "tier": "above_avg"}, {"winter": "2014-15", "start_year": 2014, "snow_in": 110.6, "is_current": false, "rank": 1, "tier": "historic"}, {"winter": "2015-16", "start_year": 2015, "snow_in": 29.6, "is_current": false, "rank": 30, "tier": "below_avg"}, {"winter": "2016-17", "start_year": 2016, "snow_in": 46.4, "is_current": false, "rank": 15, "tier": "above_avg"}, {"winter": "2017-18", "start_year": 2017, "snow_in": 58.7, "is_current": false, "rank": 11, "tier": "above_avg"}, {"winter": "2018-19", "start_year": 2018, "snow_in": 27.4, "is_current": false, "rank": 31, "tier": "below_avg"}, {"winter": "2019-20", "start_year": 2019, "snow_in": 15.1, "is_current": false, "rank": 42, "tier": "below_avg"}, {"winter": "2020-21", "start_year": 2020, "snow_in": 38.5, "is_current": false, "rank": 23, "tier": "average"}, {"winter": "2021-22", "start_year": 2021, "snow_in": 54.1, "is_current": false, "rank": 12, "tier": "above_avg"}, {"winter": "2022-23", "start_year": 2022, "snow_in": 12.4, "is_current": false, "rank": 44, "tier": "below_avg"}, {"winter": "2023-24", "start_year": 2023, "snow_in": 9.8, "is_current": false, "rank": 45, "tier": "below_avg"}, {"winter": "2024-25", "start_year": 2024, "snow_in": 28.2, "is_current": false, "rank": 30, "tier": "below_avg"}, {"winter": "2025-26", "start_year": 2025, "snow_in": 62.5, "is_current": true, "rank": 10, "tier": "historic"}];
 
-const MEAN_SNOW = 41.4;
+const MEAN_SNOW = 42.5;
 
 // ── SCROLL REVEAL ─────────────────────────────────────────────────────────────
 const observer = new IntersectionObserver((entries) => {
@@ -626,7 +626,7 @@ plowToggle.addEventListener('click', () => {
 // ── COLOR EXPRESSION ──────────────────────────────────────────────────────────
 function colorExpr(field) {
   return ['interpolate', ['linear'], ['coalesce', ['get', field], 0],
-    0, '#0d1520', 4, '#1a3d60', 8, '#3a78b0', 12, '#7ab8d8', 16, '#b8d8f0', 20, '#e8f4ff'];
+    0, '#0d1a2e', 4, '#1a4a7a', 8, '#3a82c0', 12, '#6aacdc', 16, '#a0d0f0', 20, '#dbeeff'];
 }
 function opacityExpr(field) {
   return ['interpolate', ['linear'], ['coalesce', ['get', field], 0],
@@ -674,7 +674,7 @@ async function initMap() {
   map.addLayer({
     id: 'plow-routes', type: 'line', source: 'streets',
     filter: ['==', ['get', 'is_plow_route'], true],
-    paint: { 'line-color': '#f0b84a', 'line-width': 2.0, 'line-opacity': 0.75 },
+    paint: { 'line-color': '#e0a030', 'line-width': 2.0, 'line-opacity': 0.75 },
     layout: { visibility: 'none' }
   });
 
@@ -689,10 +689,10 @@ async function initMap() {
     const snow = (p[activeField] || 0).toFixed(1);
     const plow = p.is_plow_route ? '<div style="color:#f59e0b;font-size:10px;margin-top:4px">● Plow route</div>' : '';
     popup.setLngLat(e.lngLat).setHTML(`
-      <div style="font-family:IBM Plex Sans,sans-serif;padding:12px 16px;background:#1a1c1e;border:1px solid rgba(220,230,240,0.15);border-radius:10px;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,0.6)">
-        <div style="font-family:IBM Plex Mono,monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#627a96;margin-bottom:4px">${p.neighborhood || ''}</div>
-        <div style="font-size:14px;color:#dde8f5;font-weight:500;margin-bottom:8px">${p.street_name || 'Street'}</div>
-        <div style="font-family:Playfair Display,serif;font-size:30px;color:#5bc0fa;line-height:1">${snow}<span style="font-size:14px;color:#7ab4e8;font-family:IBM Plex Sans,sans-serif">in</span></div>
+      <div style="font-family:IBM Plex Sans,sans-serif;padding:12px 16px;background:#252b33;border:1px solid rgba(180,200,220,0.15);border-radius:10px;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,0.6)">
+        <div style="font-family:IBM Plex Mono,monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#7a90a8;margin-bottom:4px">${p.neighborhood || ''}</div>
+        <div style="font-size:14px;color:#d8e4f0;font-weight:500;margin-bottom:8px">${p.street_name || 'Street'}</div>
+        <div style="font-family:Playfair Display,serif;font-size:30px;color:#6aacdc;line-height:1">${snow}<span style="font-size:14px;color:#8abce0;font-family:IBM Plex Sans,sans-serif">in</span></div>
         ${plow}
       </div>`).addTo(map);
   });
@@ -737,10 +737,10 @@ function buildChart() {
   g.append('line')
     .attr('x1', x(mean)).attr('x2', x(mean))
     .attr('y1', -8).attr('y2', height + 8)
-    .attr('stroke', 'rgba(168,200,232,0.2)').attr('stroke-width', 1).attr('stroke-dasharray', '4,3');
+    .attr('stroke', 'rgba(106,172,220,0.2)').attr('stroke-width', 1).attr('stroke-dasharray', '4,3');
   g.append('text')
     .attr('x', x(mean) + 5).attr('y', -10)
-    .attr('fill', 'rgba(168,200,232,0.5)').attr('font-size', 9)
+    .attr('fill', 'rgba(106,172,220,0.5)').attr('font-size', 9)
     .attr('font-family', "'IBM Plex Mono', monospace")
     .text(`avg ${mean}in`);
 
@@ -751,11 +751,11 @@ function buildChart() {
   rows.append('rect')
     .attr('width', 0).attr('height', y.bandwidth()).attr('rx', 2)
     .attr('fill', d => {
-      if (d.is_current) return '#a8c8e8';
-      if (d.tier === 'historic') return '#5a9ec8';
-      if (d.tier === 'above_avg') return '#3a6e94';
-      if (d.tier === 'average') return '#2a4a60';
-      return '#1a2a3a';
+      if (d.is_current) return '#6aacdc';
+      if (d.tier === 'historic') return '#3a82c0';
+      if (d.tier === 'above_avg') return '#2a5a90';
+      if (d.tier === 'average') return '#1e3d60';
+      return '#162840';
     })
     .attr('opacity', d => d.is_current ? 1 : [2022,2023].includes(d.start_year) ? 0.85 : 0.65)
     .transition().duration(600).delay((d, i) => i * 8)
@@ -764,25 +764,25 @@ function buildChart() {
   // Labels
   rows.filter(d => d.is_current).append('text')
     .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
-    .attr('fill', '#a8c8e8').attr('font-size', 11).attr('font-weight', '500')
+    .attr('fill', '#6aacdc').attr('font-size', 11).attr('font-weight', '500')
     .attr('font-family', "'IBM Plex Mono', monospace")
     .text(d => `${d.snow_in}in  ← this winter`);
 
   rows.filter(d => d.rank === 1).append('text')
     .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
-    .attr('fill', '#d4e8f4').attr('font-size', 10)
+    .attr('fill', '#c0d8f0').attr('font-size', 10)
     .attr('font-family', "'IBM Plex Mono', monospace")
     .text(d => `${d.snow_in}in — all-time record`);
 
   rows.filter(d => [2,3].includes(d.rank)).append('text')
     .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
-    .attr('fill', '#b0cfe8').attr('font-size', 10)
+    .attr('fill', '#8abce0').attr('font-size', 10)
     .attr('font-family', "'IBM Plex Mono', monospace")
     .text(d => `${d.snow_in}in  #${d.rank} all-time`);
 
   rows.filter(d => [2022,2023].includes(d.start_year)).append('text')
     .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
-    .attr('fill', '#e85050').attr('font-size', 10)
+    .attr('fill', '#d05050').attr('font-size', 10)
     .attr('font-family', "'IBM Plex Mono', monospace")
     .text(d => `${d.snow_in}in`);
 
@@ -800,7 +800,7 @@ function buildChart() {
   // Y axis
   g.append('g').call(d3.axisLeft(y).tickSize(0).tickPadding(8)).select('.domain').remove();
   g.selectAll('.tick text')
-    .attr('fill', d => d === current.winter ? '#a8c8e8' : [2022,2023].map(y=>`${y}-${String(y+1).slice(2)}`).includes(d) ? '#ef4444' : '#4a6280')
+    .attr('fill', d => d === current.winter ? '#6aacdc' : [2022,2023].map(y=>`${y}-${String(y+1).slice(2)}`).includes(d) ? '#ef4444' : '#4a6280')
     .attr('font-size', 9).attr('font-family', "'IBM Plex Mono', monospace");
 }
 
