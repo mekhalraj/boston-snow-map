@@ -13,19 +13,19 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:      #080c18;
-  --panel:   #0f1624;
-  --panel2:  #141d2e;
-  --border:  rgba(91,192,250,0.12);
-  --text:    #dde8f5;
-  --muted:   #627a96;
-  --accent:  #5bc0fa;
-  --ice1:    #c8dff7;
-  --ice2:    #7ab4e8;
-  --ice3:    #2d7fd4;
-  --purple:  #a78bfa;
-  --amber:   #f59e0b;
-  --red:     #ef4444;
+  --bg:      #111314;
+  --panel:   #1a1c1e;
+  --panel2:  #212426;
+  --border:  rgba(220,230,240,0.10);
+  --text:    #e8ecf0;
+  --muted:   #8a9aaa;
+  --accent:  #a8c8e8;
+  --ice1:    #d4e8f4;
+  --ice2:    #b0cfe8;
+  --ice3:    #7aafd4;
+  --purple:  #c8b8f0;
+  --amber:   #f0b84a;
+  --red:     #e85050;
 }
 
 html { scroll-behavior: smooth; }
@@ -39,16 +39,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ── NOISE TEXTURE OVERLAY ── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 1000;
-  opacity: 0.35;
-}
+/* snowfall handled by canvas */
 
 /* ── LAYOUT ── */
 .page { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
@@ -56,7 +47,7 @@ body::before {
 /* ── NAV ── */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(8,12,24,0.85);
+  background: rgba(14,16,18,0.90);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   padding: 14px 40px;
@@ -87,7 +78,7 @@ nav {
   content: '';
   position: absolute;
   width: 900px; height: 900px;
-  background: radial-gradient(circle, rgba(45,127,212,0.12) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(80,120,160,0.10) 0%, transparent 65%);
   top: -200px; right: -300px;
   pointer-events: none;
 }
@@ -95,7 +86,7 @@ nav {
   content: '';
   position: absolute;
   width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(91,192,250,0.07) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(140,180,220,0.07) 0%, transparent 65%);
   bottom: 0; left: -100px;
   pointer-events: none;
 }
@@ -192,21 +183,31 @@ nav {
 
 /* ── STORM SELECTOR ── */
 .storm-grid {
-  display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+  align-items: flex-start;
 }
 .storm-card {
   background: var(--panel); border: 1px solid var(--border);
   border-radius: 10px; padding: 16px 20px;
   cursor: pointer; transition: all .18s ease;
-  min-width: 120px; user-select: none;
+  user-select: none;
+  flex: 0 0 140px;
+  height: 110px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 .storm-card:hover { border-color: rgba(91,192,250,0.4); background: var(--panel2); }
 .storm-card.active {
   border-color: var(--accent);
-  background: rgba(91,192,250,0.06);
-  box-shadow: 0 0 20px rgba(91,192,250,0.08);
+  background: rgba(140,180,220,0.06);
+  box-shadow: 0 0 20px rgba(140,180,220,0.08);
 }
-.storm-card.hero { background: rgba(45,127,212,0.08); }
+.storm-card.hero { background: rgba(60,90,120,0.08); }
 .storm-card.hero.active { border-color: var(--accent); }
 .s-date {
   font-family: 'IBM Plex Mono', monospace;
@@ -233,7 +234,7 @@ nav {
 }
 .legend-bar {
   width: 160px; height: 7px; border-radius: 4px;
-  background: linear-gradient(90deg, #0d1a33, #1a3d7a, #2d7fd4, #5bc0fa, #a78bfa, #dbeafe);
+  background: linear-gradient(90deg, #1a2a3a, #2a5080, #4a90c8, #a8c8e8, #d0e8f8, #f0f6ff);
 }
 .legend-ticks {
   display: flex; justify-content: space-between; width: 160px;
@@ -306,7 +307,7 @@ nav {
   content: '';
   position: absolute; top: -60px; right: -60px;
   width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(91,192,250,0.07) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(140,180,220,0.07) 0%, transparent 65%);
   pointer-events: none;
 }
 .cta-left {}
@@ -323,7 +324,7 @@ nav {
 .cta-link {
   display: inline-flex; align-items: center; gap: 10px;
   padding: 14px 28px;
-  background: var(--accent); color: var(--bg);
+  background: var(--accent); color: #111314;
   border-radius: 8px; text-decoration: none;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 12px; font-weight: 500; letter-spacing: .08em;
@@ -371,6 +372,62 @@ footer {
 </style>
 </head>
 <body>
+
+<!-- SNOWFALL CANVAS -->
+<canvas id="snow-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;opacity:0.75"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('snow-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, flakes = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Create flakes
+  const FLAKE_COUNT = 180;
+  for (let i = 0; i < FLAKE_COUNT; i++) {
+    flakes.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 3 + 0.5,
+      speed: Math.random() * 0.8 + 0.3,
+      drift: Math.random() * 0.4 - 0.2,
+      opacity: Math.random() * 0.55 + 0.15,
+      wobble: Math.random() * Math.PI * 2,
+      wobbleSpeed: Math.random() * 0.015 + 0.005,
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    flakes.forEach(f => {
+      f.wobble += f.wobbleSpeed;
+      f.x += f.drift + Math.sin(f.wobble) * 0.3;
+      f.y += f.speed;
+
+      if (f.y > H + 10) {
+        f.y = -10;
+        f.x = Math.random() * W;
+      }
+      if (f.x > W + 10) f.x = -10;
+      if (f.x < -10) f.x = W + 10;
+
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${f.opacity})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+
 
 <!-- NAV -->
 <nav>
@@ -569,7 +626,7 @@ plowToggle.addEventListener('click', () => {
 // ── COLOR EXPRESSION ──────────────────────────────────────────────────────────
 function colorExpr(field) {
   return ['interpolate', ['linear'], ['coalesce', ['get', field], 0],
-    0, '#0d1a33', 4, '#1a3d7a', 8, '#2d7fd4', 12, '#5bc0fa', 16, '#a78bfa', 20, '#dbeafe'];
+    0, '#0d1520', 4, '#1a3d60', 8, '#3a78b0', 12, '#7ab8d8', 16, '#b8d8f0', 20, '#e8f4ff'];
 }
 function opacityExpr(field) {
   return ['interpolate', ['linear'], ['coalesce', ['get', field], 0],
@@ -617,7 +674,7 @@ async function initMap() {
   map.addLayer({
     id: 'plow-routes', type: 'line', source: 'streets',
     filter: ['==', ['get', 'is_plow_route'], true],
-    paint: { 'line-color': '#f59e0b', 'line-width': 2.0, 'line-opacity': 0.75 },
+    paint: { 'line-color': '#f0b84a', 'line-width': 2.0, 'line-opacity': 0.75 },
     layout: { visibility: 'none' }
   });
 
@@ -632,7 +689,7 @@ async function initMap() {
     const snow = (p[activeField] || 0).toFixed(1);
     const plow = p.is_plow_route ? '<div style="color:#f59e0b;font-size:10px;margin-top:4px">● Plow route</div>' : '';
     popup.setLngLat(e.lngLat).setHTML(`
-      <div style="font-family:IBM Plex Sans,sans-serif;padding:12px 16px;background:#0f1624;border:1px solid rgba(91,192,250,0.2);border-radius:10px;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,0.6)">
+      <div style="font-family:IBM Plex Sans,sans-serif;padding:12px 16px;background:#1a1c1e;border:1px solid rgba(220,230,240,0.15);border-radius:10px;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,0.6)">
         <div style="font-family:IBM Plex Mono,monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#627a96;margin-bottom:4px">${p.neighborhood || ''}</div>
         <div style="font-size:14px;color:#dde8f5;font-weight:500;margin-bottom:8px">${p.street_name || 'Street'}</div>
         <div style="font-family:Playfair Display,serif;font-size:30px;color:#5bc0fa;line-height:1">${snow}<span style="font-size:14px;color:#7ab4e8;font-family:IBM Plex Sans,sans-serif">in</span></div>
@@ -680,10 +737,10 @@ function buildChart() {
   g.append('line')
     .attr('x1', x(mean)).attr('x2', x(mean))
     .attr('y1', -8).attr('y2', height + 8)
-    .attr('stroke', 'rgba(91,192,250,0.25)').attr('stroke-width', 1).attr('stroke-dasharray', '4,3');
+    .attr('stroke', 'rgba(168,200,232,0.2)').attr('stroke-width', 1).attr('stroke-dasharray', '4,3');
   g.append('text')
     .attr('x', x(mean) + 5).attr('y', -10)
-    .attr('fill', 'rgba(91,192,250,0.45)').attr('font-size', 9)
+    .attr('fill', 'rgba(168,200,232,0.5)').attr('font-size', 9)
     .attr('font-family', "'IBM Plex Mono', monospace")
     .text(`avg ${mean}in`);
 
@@ -694,11 +751,11 @@ function buildChart() {
   rows.append('rect')
     .attr('width', 0).attr('height', y.bandwidth()).attr('rx', 2)
     .attr('fill', d => {
-      if (d.is_current) return '#5bc0fa';
-      if (d.tier === 'historic') return '#3a7fd4';
-      if (d.tier === 'above_avg') return '#2a5fa8';
-      if (d.tier === 'average') return '#1a3d7a';
-      return '#0f2550';
+      if (d.is_current) return '#a8c8e8';
+      if (d.tier === 'historic') return '#5a9ec8';
+      if (d.tier === 'above_avg') return '#3a6e94';
+      if (d.tier === 'average') return '#2a4a60';
+      return '#1a2a3a';
     })
     .attr('opacity', d => d.is_current ? 1 : [2022,2023].includes(d.start_year) ? 0.85 : 0.65)
     .transition().duration(600).delay((d, i) => i * 8)
@@ -707,25 +764,25 @@ function buildChart() {
   // Labels
   rows.filter(d => d.is_current).append('text')
     .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
-    .attr('fill', '#5bc0fa').attr('font-size', 11).attr('font-weight', '500')
+    .attr('fill', '#a8c8e8').attr('font-size', 11).attr('font-weight', '500')
     .attr('font-family', "'IBM Plex Mono', monospace")
     .text(d => `${d.snow_in}in  ← this winter`);
 
   rows.filter(d => d.rank === 1).append('text')
     .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
-    .attr('fill', '#c8dff7').attr('font-size', 10)
+    .attr('fill', '#d4e8f4').attr('font-size', 10)
     .attr('font-family', "'IBM Plex Mono', monospace")
     .text(d => `${d.snow_in}in — all-time record`);
 
   rows.filter(d => [2,3].includes(d.rank)).append('text')
     .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
-    .attr('fill', '#7ab4e8').attr('font-size', 10)
+    .attr('fill', '#b0cfe8').attr('font-size', 10)
     .attr('font-family', "'IBM Plex Mono', monospace")
     .text(d => `${d.snow_in}in  #${d.rank} all-time`);
 
   rows.filter(d => [2022,2023].includes(d.start_year)).append('text')
     .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
-    .attr('fill', '#ef4444').attr('font-size', 10)
+    .attr('fill', '#e85050').attr('font-size', 10)
     .attr('font-family', "'IBM Plex Mono', monospace")
     .text(d => `${d.snow_in}in`);
 
@@ -743,7 +800,7 @@ function buildChart() {
   // Y axis
   g.append('g').call(d3.axisLeft(y).tickSize(0).tickPadding(8)).select('.domain').remove();
   g.selectAll('.tick text')
-    .attr('fill', d => d === current.winter ? '#5bc0fa' : [2022,2023].map(y=>`${y}-${String(y+1).slice(2)}`).includes(d) ? '#ef4444' : '#4a6280')
+    .attr('fill', d => d === current.winter ? '#a8c8e8' : [2022,2023].map(y=>`${y}-${String(y+1).slice(2)}`).includes(d) ? '#ef4444' : '#4a6280')
     .attr('font-size', 9).attr('font-family', "'IBM Plex Mono', monospace");
 }
 
