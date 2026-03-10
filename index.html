@@ -261,7 +261,7 @@ nav {
 
 /* ── MAP ── */
 #map {
-  width: 100%; height: 620px;
+  width: 100%; height: 720px;
   border-radius: 12px; overflow: hidden;
   border: 1px solid var(--border);
 }
@@ -492,7 +492,7 @@ footer {
         <div class="legend-label">Snowfall</div>
         <div>
           <div class="legend-bar"></div>
-          <div class="legend-ticks"><span>0"</span><span>5"</span><span>10"</span><span>15"</span><span>20"+</span></div>
+          <div class="legend-ticks"><span>0"</span><span>20"</span><span>40"</span><span>60"</span><span>77"+</span></div>
         </div>
       </div>
       <div class="plow-toggle" id="plow-toggle">
@@ -626,11 +626,11 @@ plowToggle.addEventListener('click', () => {
 // ── COLOR EXPRESSION ──────────────────────────────────────────────────────────
 function colorExpr(field) {
   return ['interpolate', ['linear'], ['coalesce', ['get', field], 0],
-    0, '#0d1a2e', 4, '#1a4a7a', 8, '#3a82c0', 12, '#6aacdc', 16, '#a0d0f0', 20, '#dbeeff'];
+    0, '#0d1520', 10, '#1a4a7a', 25, '#3a82c0', 40, '#6aacdc', 60, '#a0d0f0', 77, '#dbeeff'];
 }
 function opacityExpr(field) {
   return ['interpolate', ['linear'], ['coalesce', ['get', field], 0],
-    0, 0.15, 3, 0.55, 8, 0.82, 15, 1.0];
+    0, 0.15, 10, 0.55, 30, 0.82, 50, 1.0];
 }
 
 // ── MAP ───────────────────────────────────────────────────────────────────────
