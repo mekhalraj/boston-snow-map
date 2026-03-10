@@ -671,21 +671,6 @@ async function initMap() {
     }
   });
 
-  // Wide invisible layer for easy hover detection
-  map.addLayer({
-    id: 'streets-hover', type: 'line', source: 'streets',
-    paint: {
-      'line-color': 'transparent',
-      'line-width': ['interpolate', ['linear'], ['zoom'],
-        10, 8,
-        12, 16,
-        14, 28,
-        16, 40
-      ],
-      'line-opacity': 0
-    }
-  });
-
   map.addLayer({
     id: 'plow-routes', type: 'line', source: 'streets',
     filter: ['==', ['get', 'is_plow_route'], true],
@@ -698,11 +683,23 @@ async function initMap() {
     closeButton: false, closeOnClick: false
   });
 
-  map.on('mousemove', 'streets-hover', (e) => {
+  map.on('mousemove', (e) => {
+    const bbox = [
+      [e.point.x - 10, e.point.y - 10],
+      [e.point.x + 10, e.point.y + 10]
+    ];
+    const features = map.queryRenderedFeatures(bbox, { layers: ['streets-snow'] });
+
+    if (!features.length) {
+      map.getCanvas().style.cursor = '';
+      popup.remove();
+      return;
+    }
+
     map.getCanvas().style.cursor = 'crosshair';
-    const p = e.features[0].properties;
+    const p = features[0].properties;
     const snow = (p[activeField] || 0).toFixed(1);
-    const plow = p.is_plow_route ? '<div style="color:#f59e0b;font-size:10px;margin-top:4px">● Plow route</div>' : '';
+    const plow = p.is_plow_route ? '<div style="color:#f0b84a;font-size:10px;margin-top:4px">● Plow route</div>' : '';
     popup.setLngLat(e.lngLat).setHTML(`
       <div style="font-family:IBM Plex Sans,sans-serif;padding:12px 16px;background:#252b33;border:1px solid rgba(180,200,220,0.15);border-radius:10px;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,0.6)">
         <div style="font-family:IBM Plex Mono,monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#7a90a8;margin-bottom:4px">${p.neighborhood || ''}</div>
@@ -710,10 +707,6 @@ async function initMap() {
         <div style="font-family:Playfair Display,serif;font-size:30px;color:#6aacdc;line-height:1">${snow}<span style="font-size:14px;color:#8abce0;font-family:IBM Plex Sans,sans-serif">in</span></div>
         ${plow}
       </div>`).addTo(map);
-  });
-  map.on('mouseleave', 'streets-hover', () => {
-    map.getCanvas().style.cursor = '';
-    popup.remove();
   });
 }
 
