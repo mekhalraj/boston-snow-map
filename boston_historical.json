@@ -1,0 +1,468 @@
+{
+  "generated": "2026-03-10",
+  "station": "Boston Logan Airport (USW00014739)",
+  "mean_snow": 42.5,
+  "median_snow": 38.5,
+  "years": [
+    {
+      "winter": "1980-81",
+      "start_year": 1980,
+      "snow_in": 22.3,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 35,
+      "pct_above_avg": -47.5,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "1981-82",
+      "start_year": 1981,
+      "snow_in": 48.5,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 16,
+      "pct_above_avg": 14.1,
+      "tier": "above_avg"
+    },
+    {
+      "winter": "1982-83",
+      "start_year": 1982,
+      "snow_in": 32.8,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 27,
+      "pct_above_avg": -22.8,
+      "tier": "average"
+    },
+    {
+      "winter": "1983-84",
+      "start_year": 1983,
+      "snow_in": 43.0,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 19,
+      "pct_above_avg": 1.2,
+      "tier": "average"
+    },
+    {
+      "winter": "1984-85",
+      "start_year": 1984,
+      "snow_in": 24.8,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 34,
+      "pct_above_avg": -41.6,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "1985-86",
+      "start_year": 1985,
+      "snow_in": 18.1,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 38,
+      "pct_above_avg": -57.4,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "1986-87",
+      "start_year": 1986,
+      "snow_in": 38.4,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 24,
+      "pct_above_avg": -9.6,
+      "tier": "average"
+    },
+    {
+      "winter": "1987-88",
+      "start_year": 1987,
+      "snow_in": 52.6,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 14,
+      "pct_above_avg": 23.8,
+      "tier": "above_avg"
+    },
+    {
+      "winter": "1988-89",
+      "start_year": 1988,
+      "snow_in": 15.2,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 40,
+      "pct_above_avg": -64.2,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "1989-90",
+      "start_year": 1989,
+      "snow_in": 38.7,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 22,
+      "pct_above_avg": -8.9,
+      "tier": "average"
+    },
+    {
+      "winter": "1990-91",
+      "start_year": 1990,
+      "snow_in": 19.1,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 37,
+      "pct_above_avg": -55.1,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "1991-92",
+      "start_year": 1991,
+      "snow_in": 21.1,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 36,
+      "pct_above_avg": -50.4,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "1992-93",
+      "start_year": 1992,
+      "snow_in": 81.9,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 5,
+      "pct_above_avg": 92.7,
+      "tier": "historic"
+    },
+    {
+      "winter": "1993-94",
+      "start_year": 1993,
+      "snow_in": 96.3,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 3,
+      "pct_above_avg": 126.6,
+      "tier": "historic"
+    },
+    {
+      "winter": "1994-95",
+      "start_year": 1994,
+      "snow_in": 15.1,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 41,
+      "pct_above_avg": -64.5,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "1995-96",
+      "start_year": 1995,
+      "snow_in": 100.3,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 2,
+      "pct_above_avg": 136.0,
+      "tier": "historic"
+    },
+    {
+      "winter": "1996-97",
+      "start_year": 1996,
+      "snow_in": 29.6,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 28,
+      "pct_above_avg": -30.4,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "1997-98",
+      "start_year": 1997,
+      "snow_in": 25.7,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 32,
+      "pct_above_avg": -39.5,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "1998-99",
+      "start_year": 1998,
+      "snow_in": 36.4,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 25,
+      "pct_above_avg": -14.4,
+      "tier": "average"
+    },
+    {
+      "winter": "1999-00",
+      "start_year": 1999,
+      "snow_in": 25.0,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 33,
+      "pct_above_avg": -41.2,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "2000-01",
+      "start_year": 2000,
+      "snow_in": 46.0,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 18,
+      "pct_above_avg": 8.2,
+      "tier": "average"
+    },
+    {
+      "winter": "2001-02",
+      "start_year": 2001,
+      "snow_in": 14.8,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 43,
+      "pct_above_avg": -65.2,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "2002-03",
+      "start_year": 2002,
+      "snow_in": 68.7,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 7,
+      "pct_above_avg": 61.6,
+      "tier": "historic"
+    },
+    {
+      "winter": "2003-04",
+      "start_year": 2003,
+      "snow_in": 39.4,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 21,
+      "pct_above_avg": -7.3,
+      "tier": "average"
+    },
+    {
+      "winter": "2004-05",
+      "start_year": 2004,
+      "snow_in": 86.7,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 4,
+      "pct_above_avg": 104.0,
+      "tier": "historic"
+    },
+    {
+      "winter": "2005-06",
+      "start_year": 2005,
+      "snow_in": 40.0,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 20,
+      "pct_above_avg": -5.9,
+      "tier": "average"
+    },
+    {
+      "winter": "2006-07",
+      "start_year": 2006,
+      "snow_in": 16.7,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 39,
+      "pct_above_avg": -60.7,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "2007-08",
+      "start_year": 2007,
+      "snow_in": 51.2,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 15,
+      "pct_above_avg": 20.5,
+      "tier": "above_avg"
+    },
+    {
+      "winter": "2008-09",
+      "start_year": 2008,
+      "snow_in": 66.0,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 8,
+      "pct_above_avg": 55.3,
+      "tier": "historic"
+    },
+    {
+      "winter": "2009-10",
+      "start_year": 2009,
+      "snow_in": 35.7,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 26,
+      "pct_above_avg": -16.0,
+      "tier": "average"
+    },
+    {
+      "winter": "2010-11",
+      "start_year": 2010,
+      "snow_in": 80.1,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 6,
+      "pct_above_avg": 88.5,
+      "tier": "historic"
+    },
+    {
+      "winter": "2011-12",
+      "start_year": 2011,
+      "snow_in": 9.3,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 46,
+      "pct_above_avg": -78.1,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "2012-13",
+      "start_year": 2012,
+      "snow_in": 63.5,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 9,
+      "pct_above_avg": 49.4,
+      "tier": "above_avg"
+    },
+    {
+      "winter": "2013-14",
+      "start_year": 2013,
+      "snow_in": 58.7,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 11,
+      "pct_above_avg": 38.1,
+      "tier": "above_avg"
+    },
+    {
+      "winter": "2014-15",
+      "start_year": 2014,
+      "snow_in": 110.6,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 1,
+      "pct_above_avg": 160.2,
+      "tier": "historic"
+    },
+    {
+      "winter": "2015-16",
+      "start_year": 2015,
+      "snow_in": 29.6,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 29,
+      "pct_above_avg": -30.4,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "2016-17",
+      "start_year": 2016,
+      "snow_in": 46.4,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 17,
+      "pct_above_avg": 9.2,
+      "tier": "average"
+    },
+    {
+      "winter": "2017-18",
+      "start_year": 2017,
+      "snow_in": 58.7,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 12,
+      "pct_above_avg": 38.1,
+      "tier": "above_avg"
+    },
+    {
+      "winter": "2018-19",
+      "start_year": 2018,
+      "snow_in": 27.4,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 31,
+      "pct_above_avg": -35.5,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "2019-20",
+      "start_year": 2019,
+      "snow_in": 15.1,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 42,
+      "pct_above_avg": -64.5,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "2020-21",
+      "start_year": 2020,
+      "snow_in": 38.5,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 23,
+      "pct_above_avg": -9.4,
+      "tier": "average"
+    },
+    {
+      "winter": "2021-22",
+      "start_year": 2021,
+      "snow_in": 54.1,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 13,
+      "pct_above_avg": 27.3,
+      "tier": "above_avg"
+    },
+    {
+      "winter": "2022-23",
+      "start_year": 2022,
+      "snow_in": 12.4,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 44,
+      "pct_above_avg": -70.8,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "2023-24",
+      "start_year": 2023,
+      "snow_in": 9.8,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 45,
+      "pct_above_avg": -76.9,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "2024-25",
+      "start_year": 2024,
+      "snow_in": 28.2,
+      "source": "NOAA GHCN",
+      "is_current": false,
+      "rank": 30,
+      "pct_above_avg": -33.6,
+      "tier": "below_avg"
+    },
+    {
+      "winter": "2025-26",
+      "start_year": 2025,
+      "snow_in": 62.5,
+      "source": "NOAA GHCN",
+      "is_current": true,
+      "rank": 10,
+      "pct_above_avg": 47.1,
+      "tier": "above_avg"
+    }
+  ]
+}
