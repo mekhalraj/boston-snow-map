@@ -671,6 +671,16 @@ async function initMap() {
     }
   });
 
+  // Wide invisible layer for easy hover detection
+  map.addLayer({
+    id: 'streets-hover', type: 'line', source: 'streets',
+    paint: {
+      'line-color': 'transparent',
+      'line-width': 12,
+      'line-opacity': 0
+    }
+  });
+
   map.addLayer({
     id: 'plow-routes', type: 'line', source: 'streets',
     filter: ['==', ['get', 'is_plow_route'], true],
@@ -683,7 +693,7 @@ async function initMap() {
     closeButton: false, closeOnClick: false
   });
 
-  map.on('mousemove', 'streets-snow', (e) => {
+  map.on('mousemove', 'streets-hover', (e) => {
     map.getCanvas().style.cursor = 'crosshair';
     const p = e.features[0].properties;
     const snow = (p[activeField] || 0).toFixed(1);
@@ -696,7 +706,7 @@ async function initMap() {
         ${plow}
       </div>`).addTo(map);
   });
-  map.on('mouseleave', 'streets-snow', () => {
+  map.on('mouseleave', 'streets-hover', () => {
     map.getCanvas().style.cursor = '';
     popup.remove();
   });
