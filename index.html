@@ -3,437 +3,156 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Boston's Stormiest Month — Winter 2025–2026</title>
+<title>NYC Snow Map — Winter 2025–26</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet">
-<script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/maplibre-gl@4.1.1/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/maplibre-gl@4.1.1/dist/maplibre-gl.js"></script>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg:      #1c2026;
-  --panel:   #252b33;
-  --panel2:  #2c3340;
-  --border:  rgba(180,200,220,0.12);
-  --text:    #d8e4f0;
-  --muted:   #7a90a8;
-  --accent:  #6aacdc;
-  --ice1:    #c0d8f0;
-  --ice2:    #8abce0;
-  --ice3:    #5a9ed0;
-  --purple:  #a090d8;
-  --amber:   #e0a030;
-  --red:     #d05050;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#E6E2DD;--panel:#F4F1ED;--card:#FFFFFF;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.12);
+  --text:#1A1A1A;--muted:#6B6B6B;--light:#999;
+  --accent:#2B5EA7;--accent2:#1B3A6B;--accent-light:#4A7FCA;
+  --ice1:#D6E5F5;--ice2:#A8C8F0;--ice3:#6BA3E0;
+  --boston-red:#C0392B;
 }
-
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 300;
-  line-height: 1.6;
-  overflow-x: hidden;
-}
-
-/* snowfall handled by canvas */
-
-/* ── LAYOUT ── */
-.page { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;line-height:1.6;overflow-x:hidden}
+.page{max-width:1100px;margin:0 auto;padding:0 40px}
 
 /* ── NAV ── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(28,32,38,0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 40px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.nav-brand {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--accent);
-}
-.nav-links { display: flex; gap: 28px; }
-.nav-links a {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--muted); text-decoration: none;
-  transition: color .2s;
-}
-.nav-links a:hover { color: var(--text); }
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(230,226,221,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 40px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+.nav-links{display:flex;gap:28px}
+.nav-links a{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
 
 /* ── HERO ── */
-.hero {
-  min-height: 100vh;
-  display: flex; flex-direction: column; justify-content: center;
-  padding: 120px 0 80px;
-  position: relative; overflow: hidden;
-}
-.hero::before {
-  content: '';
-  position: absolute;
-  width: 900px; height: 900px;
-  background: radial-gradient(circle, rgba(80,130,180,0.10) 0%, transparent 65%);
-  top: -200px; right: -300px;
-  pointer-events: none;
-}
-.hero::after {
-  content: '';
-  position: absolute;
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(80,130,180,0.07) 0%, transparent 65%);
-  bottom: 0; left: -100px;
-  pointer-events: none;
-}
-.hero-eyebrow {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 24px;
-  opacity: 0; animation: fadeUp .6s .2s forwards;
-}
-.hero-title {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(42px, 7vw, 82px);
-  line-height: 1.04; font-weight: 700; color: #fff;
-  max-width: 820px;
-  opacity: 0; animation: fadeUp .7s .35s forwards;
-}
-.hero-title em { font-style: italic; color: var(--ice2); }
-.hero-sub {
-  margin-top: 24px;
-  font-size: 16px; color: var(--muted);
-  max-width: 600px; line-height: 1.8; font-weight: 300;
-  opacity: 0; animation: fadeUp .7s .5s forwards;
-}
-.hero-stats {
-  display: flex; gap: 0; margin-top: 56px; flex-wrap: wrap;
-  border: 1px solid var(--border); border-radius: 12px;
-  background: var(--panel); overflow: hidden;
-  max-width: 780px;
-  opacity: 0; animation: fadeUp .7s .65s forwards;
-}
-.stat-item {
-  flex: 1; min-width: 140px;
-  padding: 28px 32px;
-  border-right: 1px solid var(--border);
-  position: relative;
-}
-.stat-item:last-child { border-right: none; }
-.stat-num {
-  font-family: 'Playfair Display', serif;
-  font-size: 46px; color: #fff; line-height: 1;
-  display: flex; align-items: flex-start; gap: 2px;
-}
-.stat-unit { font-size: 20px; color: var(--ice2); margin-top: 4px; font-weight: 400; }
-.stat-label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--muted); margin-top: 8px;
-}
-.scroll-hint {
-  margin-top: 56px;
-  display: flex; align-items: center; gap: 12px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
-  color: var(--muted);
-  opacity: 0; animation: fadeUp .7s .85s forwards;
-}
-.scroll-line {
-  width: 40px; height: 1px; background: var(--border);
-  position: relative; overflow: hidden;
-}
-.scroll-line::after {
-  content: ''; position: absolute;
-  width: 20px; height: 1px; background: var(--accent);
-  animation: scrollSlide 2s infinite;
-}
-@keyframes scrollSlide {
-  0% { left: -20px; } 100% { left: 40px; }
-}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 0 80px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;width:900px;height:900px;background:radial-gradient(circle,rgba(43,94,167,0.06) 0%,transparent 65%);top:-200px;right:-300px;pointer-events:none}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:24px;opacity:0;animation:fadeUp .6s .2s forwards}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(42px,7vw,78px);line-height:1.04;font-weight:700;color:var(--text);max-width:820px;opacity:0;animation:fadeUp .7s .35s forwards}
+.hero-title em{font-style:italic;color:var(--accent)}
+.hero-sub{margin-top:24px;font-size:16px;color:var(--muted);max-width:600px;line-height:1.8;font-weight:300;opacity:0;animation:fadeUp .7s .5s forwards}
+.hero-stats{display:flex;gap:0;margin-top:56px;flex-wrap:wrap;border:1px solid var(--border2);border-radius:12px;background:var(--card);overflow:hidden;max-width:780px;opacity:0;animation:fadeUp .7s .65s forwards;box-shadow:0 4px 24px rgba(0,0,0,0.04)}
+.stat-item{flex:1;min-width:140px;padding:28px 32px;border-right:1px solid var(--border)}
+.stat-item:last-child{border-right:none}
+.stat-num{font-family:'Playfair Display',serif;font-size:46px;color:var(--text);line-height:1;display:flex;align-items:flex-start;gap:2px}
+.stat-unit{font-size:20px;color:var(--accent);margin-top:4px;font-weight:400}
+.stat-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.scroll-hint{margin-top:56px;display:flex;align-items:center;gap:12px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);opacity:0;animation:fadeUp .7s .85s forwards}
+.scroll-line{width:40px;height:1px;background:var(--border2);position:relative;overflow:hidden}
+.scroll-line::after{content:'';position:absolute;width:20px;height:1px;background:var(--accent);animation:scrollSlide 2s infinite}
+@keyframes scrollSlide{0%{left:-20px}100%{left:40px}}
 
-/* ── SECTION HEADER ── */
-.section-header { margin-bottom: 32px; }
-.section-eyebrow {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--accent); margin-bottom: 12px;
-}
-.section-title {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(26px, 3.5vw, 38px); color: #fff; line-height: 1.15;
-}
-.section-title em { font-style: italic; color: var(--ice2); }
-.section-sub {
-  font-size: 14px; color: var(--muted); max-width: 620px;
-  margin-top: 10px; line-height: 1.75;
-}
+/* ── SECTIONS ── */
+.section-header{margin-bottom:32px}
+.section-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(26px,3.5vw,38px);color:var(--text);line-height:1.15}
+.section-title em{font-style:italic;color:var(--accent)}
+.section-sub{font-size:14px;color:var(--muted);max-width:620px;margin-top:10px;line-height:1.75}
+.section-divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--border2) 20%,var(--border2) 80%,transparent);margin:72px 0 64px}
 
-/* ── DIVIDER ── */
-.section-divider {
-  width: 100%; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border) 20%, var(--border) 80%, transparent);
-  margin: 72px 0 64px;
-}
-
-/* ── STORM SELECTOR ── */
-.storm-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 24px;
-  align-items: flex-start;
-}
-.storm-card {
-  background: var(--panel); border: 1px solid var(--border);
-  border-radius: 10px; padding: 16px 20px;
-  cursor: pointer; transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
-  user-select: none;
-  flex: 0 0 auto;
-  width: 148px;
-  max-height: 110px;
-  min-height: 0;
-  overflow: hidden;
-  vertical-align: top;
-}
-.storm-card:hover { border-color: rgba(91,192,250,0.4); background: var(--panel2); }
-.storm-card.active {
-  border-color: var(--accent);
-  background: rgba(60,100,140,0.07);
-  box-shadow: 0 0 20px rgba(80,130,180,0.08);
-}
-.storm-card.hero { background: rgba(60,100,140,0.08); }
-.storm-card.hero.active { border-color: var(--accent); }
-.s-date {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 6px;
-}
-.s-inches {
-  font-family: 'Playfair Display', serif;
-  font-size: 32px; color: #fff; line-height: 1;
-}
-.s-inches .s-unit { font-size: 14px; color: var(--ice2); font-family: 'IBM Plex Sans', sans-serif; }
-.s-meta { font-size: 11px; color: var(--muted); margin-top: 5px; }
-
-/* ── MAP CONTROLS ── */
-.map-controls {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 0 16px; flex-wrap: wrap; gap: 12px;
-}
-.legend { display: flex; align-items: center; gap: 12px; }
-.legend-label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--muted);
-}
-.legend-bar {
-  width: 160px; height: 7px; border-radius: 4px;
-  background: linear-gradient(90deg, #0d1a2e, #1a4a7a, #3a82c0, #6aacdc, #a0d0f0, #dbeeff);
-}
-.legend-ticks {
-  display: flex; justify-content: space-between; width: 160px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px; color: var(--muted); margin-top: 3px;
-}
-.plow-toggle {
-  display: flex; align-items: center; gap: 9px;
-  padding: 9px 16px;
-  background: var(--panel); border: 1px solid var(--border);
-  border-radius: 7px; cursor: pointer;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; letter-spacing: .06em; color: var(--text);
-  transition: all .18s;
-  user-select: none;
-}
-.plow-toggle:hover { border-color: rgba(245,158,11,0.4); }
-.plow-toggle.on { border-color: var(--amber); background: rgba(245,158,11,0.06); }
-.plow-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
-.plow-check { width: 14px; height: 14px; border: 1px solid var(--border); border-radius: 3px; display: flex; align-items: center; justify-content: center; transition: all .18s; }
-.plow-toggle.on .plow-check { background: var(--amber); border-color: var(--amber); }
-.plow-check-inner { width: 7px; height: 7px; background: var(--bg); clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%); opacity: 0; transition: opacity .18s; }
-.plow-toggle.on .plow-check-inner { opacity: 1; }
+/* ── STORM CARDS ── */
+.storm-grid{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;align-items:flex-start}
+.storm-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;cursor:pointer;transition:all .18s;user-select:none;flex:0 0 auto;width:148px;max-height:110px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.03)}
+.storm-card:hover{border-color:var(--accent-light);box-shadow:0 2px 12px rgba(43,94,167,0.08)}
+.storm-card.active{border-color:var(--accent);background:rgba(43,94,167,0.04);box-shadow:0 0 0 1px var(--accent)}
+.storm-card.hero-storm{background:rgba(43,94,167,0.03)}
+.s-date{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.s-inches{font-family:'Playfair Display',serif;font-size:32px;color:var(--text);line-height:1}
+.s-inches .s-unit{font-size:14px;color:var(--accent);font-family:'DM Sans',sans-serif}
+.s-meta{font-size:11px;color:var(--light);margin-top:5px}
 
 /* ── MAP ── */
-#map {
-  width: 100%; height: 720px;
-  border-radius: 12px; overflow: hidden;
-  border: 1px solid var(--border);
-}
-.maplibregl-popup-content {
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
+.map-controls{display:flex;align-items:center;justify-content:space-between;padding:12px 0 16px;flex-wrap:wrap;gap:12px}
+.legend{display:flex;align-items:center;gap:12px}
+.legend-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.legend-bar{width:180px;height:7px;border-radius:4px;background:linear-gradient(90deg,var(--ice1),var(--ice2),var(--ice3),var(--accent),var(--accent2))}
+.legend-ticks{display:flex;justify-content:space-between;width:180px;font-family:'DM Mono',monospace;font-size:9px;color:var(--light);margin-top:3px}
+#map{width:100%;height:720px;border-radius:12px;overflow:hidden;border:1px solid var(--border2)}
+.maplibregl-ctrl-attrib{display:none!important}
+.maplibregl-popup-content{background:transparent!important;box-shadow:none!important;padding:0!important}
 
-/* ── CHART SECTION ── */
-.chart-wrap { overflow-x: auto; }
-#hist-chart { display: block; }
+/* ── BOROUGH BARS ── */
+.borough-grid{display:flex;flex-direction:column;gap:16px;max-width:700px}
+.boro-row{display:flex;align-items:center;gap:16px}
+.boro-name{width:110px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.05em;color:var(--muted);text-align:right;flex-shrink:0}
+.boro-bar-wrap{flex:1;height:32px;background:rgba(0,0,0,0.03);border-radius:4px;overflow:hidden;position:relative}
+.boro-bar{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.25,.46,.45,.94);background:linear-gradient(90deg,var(--ice2),var(--accent))}
+.boro-val{font-family:'Playfair Display',serif;font-size:20px;color:var(--text);width:60px;flex-shrink:0}
+.boro-val span{font-size:12px;color:var(--accent)}
+
+/* ── HISTORY CHART ── */
+.chart-container{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;box-shadow:0 2px 16px rgba(0,0,0,0.03)}
+.chart-canvas-wrap{width:100%;height:340px;position:relative}
+.chart-canvas-wrap canvas{width:100%;height:100%}
+.chart-legend{display:flex;gap:20px;margin-top:12px;font-size:11px;color:var(--muted)}
+.chart-legend-item{display:flex;align-items:center;gap:6px}
+.chart-legend-dot{width:10px;height:10px;border-radius:2px}
+
+/* ── COMPARE ── */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;max-width:600px;box-shadow:0 2px 16px rgba(0,0,0,0.03)}
+.compare-cell{padding:18px 24px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);text-align:center}
+.compare-cell:nth-child(3n){border-right:none}
+.compare-cell.header{background:var(--panel);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:14px 24px}
+.compare-cell .val{font-family:'Playfair Display',serif;font-size:26px;line-height:1}
+.compare-cell .val.nyc{color:var(--accent)}
+.compare-cell .val.bos{color:var(--boston-red)}
+.compare-cell .metric{font-size:11px;color:var(--light);margin-top:4px}
+.compare-link{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:12px 24px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--accent);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.06em;text-decoration:none;transition:all .2s}
+.compare-link:hover{border-color:var(--accent);background:rgba(43,94,167,0.04)}
 
 /* ── METHODOLOGY ── */
-.method-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
-  margin-top: 8px;
-}
-.method-card {
-  background: var(--panel); border: 1px solid var(--border);
-  border-radius: 10px; padding: 24px 28px;
-}
-.method-card-title {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
-  color: var(--accent); margin-bottom: 10px;
-}
-.method-card p {
-  font-size: 13px; color: var(--muted); line-height: 1.75;
-}
+.method-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px}
+.method-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:24px 28px;box-shadow:0 1px 8px rgba(0,0,0,0.03)}
+.method-card-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.method-card p{font-size:13px;color:var(--muted);line-height:1.75}
+.method-card strong{color:var(--text)}
 
 /* ── CTA ── */
-.cta-wrap {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 44px 48px;
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 24px;
-  position: relative; overflow: hidden;
-}
-.cta-wrap::before {
-  content: '';
-  position: absolute; top: -60px; right: -60px;
-  width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(80,130,180,0.07) 0%, transparent 65%);
-  pointer-events: none;
-}
-.cta-left {}
-.cta-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 26px; color: #fff;
-}
-.cta-role {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--muted); margin-top: 6px;
-}
-.cta-desc { font-size: 14px; color: var(--muted); margin-top: 10px; max-width: 440px; line-height: 1.7; }
-.cta-link {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 14px 28px;
-  background: var(--accent); color: #1c2026;
-  border-radius: 8px; text-decoration: none;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px; font-weight: 500; letter-spacing: .08em;
-  transition: all .2s; flex-shrink: 0;
-}
-.cta-link:hover { background: var(--ice1); transform: translateY(-1px); }
+.cta-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:44px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;position:relative;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.03)}
+.cta-wrap::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(43,94,167,0.04) 0%,transparent 65%);pointer-events:none}
+.cta-name{font-family:'Playfair Display',serif;font-size:26px;color:var(--text)}
+.cta-role{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.cta-desc{font-size:14px;color:var(--muted);margin-top:10px;max-width:440px;line-height:1.7}
+.cta-link{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.08em;transition:all .2s;flex-shrink:0}
+.cta-link:hover{background:var(--accent2);transform:translateY(-1px)}
 
 /* ── FOOTER ── */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 28px 40px;
-  display: flex; align-items: center; justify-content: space-between;
-  margin-top: 80px; flex-wrap: wrap; gap: 12px;
-}
-.footer-left {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--muted);
-}
-.footer-sources { font-size: 11px; color: var(--muted); }
-.footer-sources a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-items:center;justify-content:space-between;margin-top:80px;flex-wrap:wrap;gap:12px}
+.footer-left{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.footer-sources{font-size:11px;color:var(--light)}
+.footer-sources a{color:var(--muted);text-decoration:underline;text-underline-offset:3px}
 
 /* ── ANIMATIONS ── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.reveal {
-  opacity: 0; transform: translateY(20px);
-  transition: opacity .6s ease, transform .6s ease;
-}
-.reveal.visible { opacity: 1; transform: translateY(0); }
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
 
 /* ── RESPONSIVE ── */
-@media (max-width: 768px) {
-  .page { padding: 0 20px; }
-  nav { padding: 14px 20px; }
-  .hero-stats { flex-direction: column; }
-  .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
-  .stat-item:last-child { border-bottom: none; }
-  .method-grid { grid-template-columns: 1fr; }
-  .cta-wrap { padding: 28px 24px; }
-  footer { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
+@media(max-width:768px){
+  .page{padding:0 20px}nav{padding:14px 20px}
+  .hero-stats{flex-direction:column}.stat-item{border-right:none;border-bottom:1px solid var(--border)}.stat-item:last-child{border-bottom:none}
+  .method-grid{grid-template-columns:1fr}.compare-grid{grid-template-columns:1fr 1fr 1fr}
+  .cta-wrap{padding:28px 24px}footer{padding:24px 20px;flex-direction:column;align-items:flex-start}
+  #map{height:500px}
 }
 </style>
 </head>
 <body>
 
 <!-- SNOWFALL CANVAS -->
-<canvas id="snow-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;opacity:0.65"></canvas>
-<script>
-(function() {
-  const canvas = document.getElementById('snow-canvas');
-  const ctx = canvas.getContext('2d');
-  let W, H, flakes = [];
-
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  // Create flakes
-  const FLAKE_COUNT = 180;
-  for (let i = 0; i < FLAKE_COUNT; i++) {
-    flakes.push({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      r: Math.random() * 3 + 0.5,
-      speed: Math.random() * 0.8 + 0.3,
-      drift: Math.random() * 0.4 - 0.2,
-      opacity: Math.random() * 0.55 + 0.15,
-      wobble: Math.random() * Math.PI * 2,
-      wobbleSpeed: Math.random() * 0.015 + 0.005,
-    });
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    flakes.forEach(f => {
-      f.wobble += f.wobbleSpeed;
-      f.x += f.drift + Math.sin(f.wobble) * 0.3;
-      f.y += f.speed;
-
-      if (f.y > H + 10) {
-        f.y = -10;
-        f.x = Math.random() * W;
-      }
-      if (f.x > W + 10) f.x = -10;
-      if (f.x < -10) f.x = W + 10;
-
-      ctx.beginPath();
-      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(210,228,248,${f.opacity})`;
-      ctx.fill();
-    });
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
-</script>
-
+<canvas id="snow-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;opacity:0.3"></canvas>
 
 <!-- NAV -->
 <nav>
-  <div class="nav-brand">Boston Snow · Winter 2025–2026</div>
+  <div class="nav-brand">NYC Snow · Winter 2025–2026</div>
   <div class="nav-links">
     <a href="#map-section">Map</a>
+    <a href="#borough-section">Boroughs</a>
     <a href="#history-section">History</a>
     <a href="#method-section">Methodology</a>
   </div>
@@ -442,31 +161,14 @@ footer {
 <!-- HERO -->
 <section class="hero">
   <div class="page">
-    <div class="hero-eyebrow">Boston · Street-Level Snowfall Analysis · Winter 2025–2026</div>
-    <h1 class="hero-title">Boston's <em>stormiest<br>month</em> in a decade —<br>mapped street by street.</h1>
+    <div class="hero-eyebrow">New York City · Neighborhood Snowfall Analysis · Winter 2025–2026</div>
+    <h1 class="hero-title">NYC's biggest <em>February<br>blizzard</em> in a decade —<br>mapped neighborhood<br>by neighborhood.</h1>
     <p class="hero-sub">
-      The two prior winters combined for just 22.2 inches of snow.
-      Then January arrived. Two storms in six weeks buried the city under
-      nearly 35 inches — more than the prior two full winters combined.
+      Central Park recorded 43.4 inches this season — well above the 26.6-inch average.
+      February's nor'easter alone dropped 13+ inches across the city, with Queens
+      neighborhoods seeing over 22 inches from a single storm.
     </p>
-    <div class="hero-stats">
-      <div class="stat-item">
-        <div class="stat-num">62<span class="stat-unit">in</span></div>
-        <div class="stat-label">Season snowfall 2025–26</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">21<span class="stat-unit">in</span></div>
-        <div class="stat-label">single storm peak</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">2</div>
-        <div class="stat-label">near-snowless winters before this</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">41k</div>
-        <div class="stat-label">street segments mapped</div>
-      </div>
-    </div>
+    <div class="hero-stats" id="heroStats"></div>
     <div class="scroll-hint">
       <div class="scroll-line"></div>
       Scroll to explore
@@ -475,55 +177,76 @@ footer {
 </section>
 
 <!-- MAP SECTION -->
-<section id="map-section" style="padding: 80px 0 0;">
+<section id="map-section" style="padding:80px 0 0">
   <div class="page">
     <div class="section-header reveal">
       <div class="section-eyebrow">Interactive Map</div>
-      <h2 class="section-title">Every street. <em>Every storm.</em></h2>
-      <p class="section-sub">Select a storm below to see snowfall intensity across Greater Boston's 41,000+ street segments. Hover any street for exact measurements.</p>
+      <h2 class="section-title">Every neighborhood. <em>Every storm.</em></h2>
+      <p class="section-sub">Select a storm below to see snowfall across NYC's 262 neighborhoods. Hover any area for exact measurements. Zoom in for detail.</p>
     </div>
-
-    <!-- Storm selector -->
     <div class="storm-grid reveal" id="storm-selector"></div>
-
-    <!-- Map controls -->
     <div class="map-controls reveal">
       <div class="legend">
         <div class="legend-label">Snowfall</div>
         <div>
           <div class="legend-bar"></div>
-          <div class="legend-ticks"><span>0"</span><span>20"</span><span>40"</span><span>60"</span><span>77"+</span></div>
+          <div class="legend-ticks"><span>5"</span><span>20"</span><span>35"</span><span>55"+</span></div>
         </div>
       </div>
-      <div class="plow-toggle" id="plow-toggle">
-        <div class="plow-dot"></div>
-        <div class="plow-check"><div class="plow-check-inner"></div></div>
-        Show plow routes
-      </div>
     </div>
-
-    <!-- Map -->
     <div id="map" class="reveal"></div>
   </div>
 </section>
 
+<!-- BOROUGH SECTION -->
+<section id="borough-section" style="padding:0">
+  <div class="page">
+    <div class="section-divider"></div>
+    <div class="section-header reveal">
+      <div class="section-eyebrow">Borough Breakdown</div>
+      <h2 class="section-title">Five boroughs, <em>five stories.</em></h2>
+      <p class="section-sub">Average neighborhood snowfall by borough. Queens consistently topped the charts this season, while Staten Island saw the least.</p>
+    </div>
+    <div class="borough-grid reveal" id="boroughBars"></div>
+  </div>
+</section>
+
 <!-- HISTORY SECTION -->
-<section id="history-section" style="padding: 0;">
+<section id="history-section" style="padding:0">
   <div class="page">
     <div class="section-divider"></div>
     <div class="section-header reveal">
       <div class="section-eyebrow">Historical Context</div>
       <h2 class="section-title">How does this winter <em>rank?</em></h2>
-      <p class="section-sub">Seasonal snowfall at Boston Logan Airport, 1980–2026. After back-to-back drought winters, the 2025–26 season came in at 62.5in — ranking #10 all-time at Logan Airport.</p>
+      <p class="section-sub">Seasonal snowfall at Central Park, 1938–2026. With 88 winters of data, NYC's 43.5-inch season ranks #15 all-time — well above the 26.6-inch average.</p>
     </div>
-    <div class="chart-wrap reveal">
-      <svg id="hist-chart"></svg>
+    <div class="chart-container reveal">
+      <div class="chart-canvas-wrap"><canvas id="histChart"></canvas></div>
+      <div class="chart-legend">
+        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--accent)"></div>2025–26</div>
+        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:rgba(0,0,0,0.1)"></div>Other Winters</div>
+        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--light);height:2px;width:14px;border-radius:0"></div>Average (26.6")</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- METHODOLOGY SECTION -->
-<section id="method-section" style="padding: 0;">
+<!-- VS BOSTON SECTION -->
+<section id="compare-section" style="padding:0">
+  <div class="page">
+    <div class="section-divider"></div>
+    <div class="section-header reveal">
+      <div class="section-eyebrow">City Comparison</div>
+      <h2 class="section-title">NYC vs Boston — <em>who got buried?</em></h2>
+      <p class="section-sub">Boston's 62.5-inch season dwarfed NYC's 43.4 inches. But both cities ranked in their top 15 all-time — a brutal winter across the Northeast.</p>
+    </div>
+    <div class="compare-grid reveal" id="compareGrid"></div>
+    <a class="compare-link reveal" href="https://mekhalraj.github.io/boston-snow-map" target="_blank">Explore the Boston Snow Map →</a>
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section id="method-section" style="padding:0">
   <div class="page">
     <div class="section-divider"></div>
     <div class="section-header reveal">
@@ -533,288 +256,294 @@ footer {
     <div class="method-grid reveal">
       <div class="method-card">
         <div class="method-card-title">Data Sources</div>
-        <p><strong style="color:var(--text)">CoCoRaHS</strong> — 27 volunteer observer stations across Boston metro (7 zero-reading stations excluded). Daily NewSnowDepth measurements, Oct 2025 – Mar 2026.<br><br>
-        <strong style="color:var(--text)">NOAA GHCN Daily</strong> — Boston Logan Airport (USW00014739). Historical seasonal totals 1980–2026.<br><br>
-        <strong style="color:var(--text)">OpenStreetMap</strong> — Street geometry via osmnx Python library.</p>
+        <p><strong>NOAA GHCN Daily</strong> — Central Park station (USW00094728). Historical seasonal totals 1938–2026. The canonical NYC weather station.<br><br>
+        <strong>CoCoRaHS</strong> — Fetched via CoCoRaHS-Download-Tool pip package. Daily NewSnowDepth readings across NY state, filtered to NYC bounding box.<br><br>
+        <strong>NYC Open Data</strong> — Neighborhood Tabulation Areas (NTAs) 2020 boundaries. 262 neighborhoods across 5 boroughs.</p>
       </div>
       <div class="method-card">
-        <div class="method-card-title">Spatial Interpolation</div>
-        <p>Street-level snowfall is estimated using <strong style="color:var(--text)">Inverse Distance Weighting (IDW)</strong> with power=2, k=8 nearest neighbors. Each of the 26,064 street segment midpoints is assigned a snowfall estimate based on a weighted average of the 8 nearest CoCoRaHS stations — closer stations carry proportionally greater weight.<br><br>
-        Plow priority is derived from road classification (major → secondary → residential) where City of Boston open data was unavailable.</p>
+        <div class="method-card-title">Spatial Analysis</div>
+        <p><strong>Interpolation</strong> — When multiple CoCoRaHS stations available, Inverse Distance Weighting (IDW, power=2, k=8) from station locations to NTA centroids.<br><br>
+        <strong>Borough Aggregation</strong> — NTA boundaries dissolved by borough using geopandas. Mean and max snowfall computed per borough per storm.<br><br>
+        <strong>Pipeline</strong> — Google Colab notebook. Full source available on <a href="https://github.com/mekhalraj/nyc-snow-map" style="color:var(--accent)">GitHub</a>.</p>
       </div>
     </div>
-
     <div class="section-divider"></div>
-
-    <!-- CTA -->
     <div class="cta-wrap reveal">
-      <div class="cta-left">
+      <div>
         <div class="cta-name">Mekhal Raj</div>
         <div class="cta-role">Data &amp; Analytics · Systems Analyst · Boston, MA</div>
         <p class="cta-desc">6+ years in data engineering, analytics, and AI/ML. Built this project end-to-end — from NOAA API pipeline to spatial interpolation to this visualization. Open to new opportunities.</p>
       </div>
-      <a class="cta-link" href="https://www.linkedin.com/in/mekhalrajr/" target="_blank">
-        Connect on LinkedIn ↗
-      </a>
+      <a class="cta-link" href="https://www.linkedin.com/in/mekhalrajr/" target="_blank">Connect on LinkedIn ↗</a>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
-  <div class="footer-left">Greater Boston Snow Map · Winter 2025–2026 · Built by Mekhal Raj</div>
+  <div class="footer-left">NYC Snow Map · Winter 2025–2026 · Built by Mekhal Raj</div>
   <div class="footer-sources">
     Data: <a href="https://cocorahs.org" target="_blank">CoCoRaHS</a> ·
     <a href="https://www.ncdc.noaa.gov/cdo-web/" target="_blank">NOAA GHCN</a> ·
-    <a href="https://www.openstreetmap.org" target="_blank">OpenStreetMap</a>
+    <a href="https://data.cityofnewyork.us" target="_blank">NYC Open Data</a>
   </div>
 </footer>
 
 <script>
-// ── DATA ──────────────────────────────────────────────────────────────────────
-const STORMS = [{"id": "storm_03", "start_date": "2026-01-26", "end_date": "2026-01-27", "label": "Jan 26\u201327, 2026", "avg_snow_in": 17.8, "peak_snow_in": 18.2, "n_days": 2, "snow_field": "snow_storm_03"}, {"id": "storm_06", "start_date": "2026-02-21", "end_date": "2026-02-24", "label": "Feb 21\u201324, 2026", "avg_snow_in": 16.6, "peak_snow_in": 21.0, "n_days": 3, "snow_field": "snow_storm_06"}, {"id": "storm_04", "start_date": "2026-02-07", "end_date": "2026-02-08", "label": "Feb 7\u20138, 2026", "avg_snow_in": 5.3, "peak_snow_in": 8.0, "n_days": 2, "snow_field": "snow_storm_04"}, {"id": "storm_02", "start_date": "2026-01-19", "end_date": "2026-01-19", "label": "Jan 19, 2026", "avg_snow_in": 4.7, "peak_snow_in": 6.4, "n_days": 1, "snow_field": "snow_storm_02"}, {"id": "storm_01", "start_date": "2025-12-27", "end_date": "2025-12-27", "label": "Dec 27, 2025", "avg_snow_in": 2.6, "peak_snow_in": 3.5, "n_days": 1, "snow_field": "snow_storm_01"}, {"id": "storm_05", "start_date": "2026-02-11", "end_date": "2026-02-11", "label": "Feb 11, 2026", "avg_snow_in": 1.6, "peak_snow_in": 2.5, "n_days": 1, "snow_field": "snow_storm_05"}, {"id": "storm_07", "start_date": "2026-03-04", "end_date": "2026-03-04", "label": "Mar 4, 2026", "avg_snow_in": 1.4, "peak_snow_in": 2.5, "n_days": 1, "snow_field": "snow_storm_07"}];
+// ── DATA ──
+const DATA_BASE = '.';
+let stormsData, historicalData, neighborhoodsData, boroughsData, map, activeField='snow_seasonal';
 
-const HISTORICAL = [{"winter": "1980-81", "start_year": 1980, "snow_in": 22.3, "is_current": false, "rank": 36, "tier": "below_avg"}, {"winter": "1981-82", "start_year": 1981, "snow_in": 48.5, "is_current": false, "rank": 14, "tier": "above_avg"}, {"winter": "1982-83", "start_year": 1982, "snow_in": 32.8, "is_current": false, "rank": 27, "tier": "average"}, {"winter": "1983-84", "start_year": 1983, "snow_in": 43.0, "is_current": false, "rank": 18, "tier": "average"}, {"winter": "1984-85", "start_year": 1984, "snow_in": 24.8, "is_current": false, "rank": 33, "tier": "below_avg"}, {"winter": "1985-86", "start_year": 1985, "snow_in": 18.1, "is_current": false, "rank": 39, "tier": "below_avg"}, {"winter": "1986-87", "start_year": 1986, "snow_in": 38.4, "is_current": false, "rank": 22, "tier": "average"}, {"winter": "1987-88", "start_year": 1987, "snow_in": 52.6, "is_current": false, "rank": 12, "tier": "above_avg"}, {"winter": "1988-89", "start_year": 1988, "snow_in": 15.2, "is_current": false, "rank": 41, "tier": "below_avg"}, {"winter": "1989-90", "start_year": 1989, "snow_in": 38.7, "is_current": false, "rank": 21, "tier": "average"}, {"winter": "1990-91", "start_year": 1990, "snow_in": 19.1, "is_current": false, "rank": 38, "tier": "below_avg"}, {"winter": "1991-92", "start_year": 1991, "snow_in": 21.1, "is_current": false, "rank": 37, "tier": "below_avg"}, {"winter": "1992-93", "start_year": 1992, "snow_in": 81.9, "is_current": false, "rank": 5, "tier": "historic"}, {"winter": "1993-94", "start_year": 1993, "snow_in": 96.3, "is_current": false, "rank": 3, "tier": "historic"}, {"winter": "1994-95", "start_year": 1994, "snow_in": 15.1, "is_current": false, "rank": 42, "tier": "below_avg"}, {"winter": "1995-96", "start_year": 1995, "snow_in": 100.3, "is_current": false, "rank": 2, "tier": "historic"}, {"winter": "1996-97", "start_year": 1996, "snow_in": 29.6, "is_current": false, "rank": 29, "tier": "below_avg"}, {"winter": "1997-98", "start_year": 1997, "snow_in": 25.7, "is_current": false, "rank": 32, "tier": "below_avg"}, {"winter": "1998-99", "start_year": 1998, "snow_in": 36.4, "is_current": false, "rank": 24, "tier": "average"}, {"winter": "1999-00", "start_year": 1999, "snow_in": 25.0, "is_current": false, "rank": 34, "tier": "below_avg"}, {"winter": "2000-01", "start_year": 2000, "snow_in": 46.0, "is_current": false, "rank": 16, "tier": "above_avg"}, {"winter": "2001-02", "start_year": 2001, "snow_in": 14.8, "is_current": false, "rank": 43, "tier": "below_avg"}, {"winter": "2002-03", "start_year": 2002, "snow_in": 68.7, "is_current": false, "rank": 8, "tier": "historic"}, {"winter": "2003-04", "start_year": 2003, "snow_in": 39.4, "is_current": false, "rank": 20, "tier": "average"}, {"winter": "2004-05", "start_year": 2004, "snow_in": 86.7, "is_current": false, "rank": 4, "tier": "historic"}, {"winter": "2005-06", "start_year": 2005, "snow_in": 40.0, "is_current": false, "rank": 19, "tier": "average"}, {"winter": "2006-07", "start_year": 2006, "snow_in": 16.7, "is_current": false, "rank": 40, "tier": "below_avg"}, {"winter": "2007-08", "start_year": 2007, "snow_in": 51.2, "is_current": false, "rank": 13, "tier": "above_avg"}, {"winter": "2008-09", "start_year": 2008, "snow_in": 66.0, "is_current": false, "rank": 9, "tier": "historic"}, {"winter": "2009-10", "start_year": 2009, "snow_in": 35.7, "is_current": false, "rank": 25, "tier": "average"}, {"winter": "2010-11", "start_year": 2010, "snow_in": 80.1, "is_current": false, "rank": 6, "tier": "historic"}, {"winter": "2011-12", "start_year": 2011, "snow_in": 9.3, "is_current": false, "rank": 46, "tier": "below_avg"}, {"winter": "2012-13", "start_year": 2012, "snow_in": 63.5, "is_current": false, "rank": 10, "tier": "historic"}, {"winter": "2013-14", "start_year": 2013, "snow_in": 58.7, "is_current": false, "rank": 11, "tier": "above_avg"}, {"winter": "2014-15", "start_year": 2014, "snow_in": 110.6, "is_current": false, "rank": 1, "tier": "historic"}, {"winter": "2015-16", "start_year": 2015, "snow_in": 29.6, "is_current": false, "rank": 30, "tier": "below_avg"}, {"winter": "2016-17", "start_year": 2016, "snow_in": 46.4, "is_current": false, "rank": 15, "tier": "above_avg"}, {"winter": "2017-18", "start_year": 2017, "snow_in": 58.7, "is_current": false, "rank": 11, "tier": "above_avg"}, {"winter": "2018-19", "start_year": 2018, "snow_in": 27.4, "is_current": false, "rank": 31, "tier": "below_avg"}, {"winter": "2019-20", "start_year": 2019, "snow_in": 15.1, "is_current": false, "rank": 42, "tier": "below_avg"}, {"winter": "2020-21", "start_year": 2020, "snow_in": 38.5, "is_current": false, "rank": 23, "tier": "average"}, {"winter": "2021-22", "start_year": 2021, "snow_in": 54.1, "is_current": false, "rank": 12, "tier": "above_avg"}, {"winter": "2022-23", "start_year": 2022, "snow_in": 12.4, "is_current": false, "rank": 44, "tier": "below_avg"}, {"winter": "2023-24", "start_year": 2023, "snow_in": 9.8, "is_current": false, "rank": 45, "tier": "below_avg"}, {"winter": "2024-25", "start_year": 2024, "snow_in": 28.2, "is_current": false, "rank": 30, "tier": "below_avg"}, {"winter": "2025-26", "start_year": 2025, "snow_in": 62.5, "is_current": true, "rank": 10, "tier": "historic"}];
-
-const MEAN_SNOW = 42.5;
-
-// ── SCROLL REVEAL ─────────────────────────────────────────────────────────────
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.08 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-// ── STORM SELECTOR ────────────────────────────────────────────────────────────
-let activeField = STORMS[0].snow_field;
-const selector = document.getElementById('storm-selector');
-
-// All Season card
-const allCard = document.createElement('div');
-allCard.className = 'storm-card';
-allCard.dataset.field = 'snow_seasonal';
-allCard.innerHTML = `<div class="s-date">Full Season</div><div class="s-inches">62.5<span class="s-unit">in</span></div><div class="s-meta">Oct 2025 – Mar 2026</div>`;
-selector.appendChild(allCard);
-
-STORMS.forEach((s, i) => {
-  const card = document.createElement('div');
-  card.className = `storm-card ${s.avg_snow_in >= 15 ? 'hero' : ''} ${i === 0 ? 'active' : ''}`;
-  card.dataset.field = s.snow_field;
-  card.innerHTML = `<div class="s-date">${s.label}</div><div class="s-inches">${s.avg_snow_in}<span class="s-unit">in</span></div><div class="s-meta">${s.peak_snow_in}in peak · ${s.n_days} day${s.n_days > 1 ? 's' : ''}</div>`;
-  selector.appendChild(card);
-});
-
-selector.querySelectorAll('.storm-card').forEach(card => {
-  card.addEventListener('click', () => {
-    selector.querySelectorAll('.storm-card').forEach(c => c.classList.remove('active'));
-    card.classList.add('active');
-    activeField = card.dataset.field;
-    updateMap();
-  });
-});
-
-// ── PLOW TOGGLE ───────────────────────────────────────────────────────────────
-let showPlow = false;
-const plowToggle = document.getElementById('plow-toggle');
-plowToggle.addEventListener('click', () => {
-  showPlow = !showPlow;
-  plowToggle.classList.toggle('on', showPlow);
-  if (map && map.getLayer('plow-routes')) {
-    map.setLayoutProperty('plow-routes', 'visibility', showPlow ? 'visible' : 'none');
-  }
-});
-
-// ── COLOR EXPRESSION ──────────────────────────────────────────────────────────
-function colorExpr(field) {
-  return ['interpolate', ['linear'], ['coalesce', ['get', field], 0],
-    0, '#0d1520', 10, '#1a4a7a', 25, '#3a82c0', 40, '#6aacdc', 60, '#a0d0f0', 77, '#dbeeff'];
-}
-function opacityExpr(field) {
-  return ['interpolate', ['linear'], ['coalesce', ['get', field], 0],
-    0, 0.15, 10, 0.55, 30, 0.82, 50, 1.0];
+async function loadData(){
+  const [s,h,n,b] = await Promise.all([
+    fetch(`${DATA_BASE}/nyc_storms.json`).then(r=>r.json()),
+    fetch(`${DATA_BASE}/nyc_historical.json`).then(r=>r.json()),
+    fetch(`${DATA_BASE}/nyc_neighborhoods.geojson`).then(r=>r.json()),
+    fetch(`${DATA_BASE}/nyc_boroughs.geojson`).then(r=>r.json())
+  ]);
+  stormsData=s; historicalData=h; neighborhoodsData=n; boroughsData=b;
 }
 
-// ── MAP ───────────────────────────────────────────────────────────────────────
-let map;
+// ── SCROLL REVEAL ──
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:0.08});
 
-async function initMap() {
-  map = new maplibregl.Map({
-    container: 'map',
-    style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
-    center: [-71.085, 42.338],
-    zoom: 12.2,
-    minZoom: 10,
-    maxZoom: 17,
-    attributionControl: false
+// ── HERO STATS ──
+function renderHero(){
+  const cur=historicalData.years.find(y=>y.is_current);
+  document.getElementById('heroStats').innerHTML=`
+    <div class="stat-item"><div class="stat-num">${stormsData.season_total_in}<span class="stat-unit">in</span></div><div class="stat-label">Season snowfall 2025–26</div></div>
+    <div class="stat-item"><div class="stat-num">${stormsData.storms[0].peak_snow_in}<span class="stat-unit">in</span></div><div class="stat-label">Single storm peak</div></div>
+    <div class="stat-item"><div class="stat-num">#${cur?cur.rank:'—'}</div><div class="stat-label">All-time rank (88 winters)</div></div>
+    <div class="stat-item"><div class="stat-num">${neighborhoodsData.features.length}</div><div class="stat-label">Neighborhoods mapped</div></div>`;
+}
+
+// ── STORM SELECTOR ──
+function renderStorms(){
+  const sel=document.getElementById('storm-selector');
+  // Season card
+  const allCard=document.createElement('div');
+  allCard.className='storm-card active';
+  allCard.dataset.field='snow_seasonal';
+  allCard.innerHTML=`<div class="s-date">Full Season</div><div class="s-inches">${stormsData.season_total_in}<span class="s-unit">in</span></div><div class="s-meta">Oct 2025 – Mar 2026</div>`;
+  sel.appendChild(allCard);
+
+  stormsData.storms.forEach(s=>{
+    const card=document.createElement('div');
+    card.className=`storm-card ${s.avg_snow_in>=10?'hero-storm':''}`;
+    card.dataset.field=s.snow_field;
+    card.innerHTML=`<div class="s-date">${s.label}</div><div class="s-inches">${s.avg_snow_in}<span class="s-unit">in</span></div><div class="s-meta">${s.peak_snow_in}in peak · ${s.n_days}d</div>`;
+    sel.appendChild(card);
   });
 
-  map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
-  map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
-
-  await new Promise(resolve => map.on('load', resolve));
-
-  // Load streets GeoJSON from file
-  const resp = await fetch('boston_streets_snow.geojson');
-  const geojson = await resp.json();
-
-  map.addSource('streets', { type: 'geojson', data: geojson });
-
-  map.addLayer({
-    id: 'streets-snow', type: 'line', source: 'streets',
-    paint: {
-      'line-color': colorExpr(activeField),
-      'line-width': ['case',
-        ['==', ['get', 'road_type'], 'major'], 2.0,
-        ['==', ['get', 'road_type'], 'secondary'], 1.3,
-        0.7
-      ],
-      'line-opacity': opacityExpr(activeField)
-    }
+  sel.querySelectorAll('.storm-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      sel.querySelectorAll('.storm-card').forEach(c=>c.classList.remove('active'));
+      card.classList.add('active');
+      activeField=card.dataset.field;
+      updateMap();
+      renderBoroughs();
+    });
   });
+}
 
-  map.addLayer({
-    id: 'plow-routes', type: 'line', source: 'streets',
-    filter: ['==', ['get', 'is_plow_route'], true],
-    paint: { 'line-color': '#e0a030', 'line-width': 2.0, 'line-opacity': 0.75 },
-    layout: { visibility: 'none' }
+// ── MAP ──
+function colorExpr(f){
+  return['interpolate',['linear'],['coalesce',['get',f],0],
+    5,'#D6E5F5',15,'#A8C8F0',25,'#6BA3E0',35,'#4A7FCA',45,'#2B5EA7',55,'#1B3A6B'];
+}
+
+async function initMap(){
+  map=new maplibregl.Map({
+    container:'map',
+    style:'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+    center:[-73.95,40.71],zoom:10.2,minZoom:9,maxZoom:15,
+    attributionControl:false
   });
+  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
+
+  await new Promise(r=>map.on('load',r));
+
+  map.addSource('neighborhoods',{type:'geojson',data:neighborhoodsData});
+  map.addLayer({id:'nb-fill',type:'fill',source:'neighborhoods',paint:{
+    'fill-color':colorExpr('snow_seasonal'),
+    'fill-opacity':['interpolate',['linear'],['zoom'],9.5,0,10.5,0.75]
+  }});
+  map.addLayer({id:'nb-line',type:'line',source:'neighborhoods',paint:{
+    'line-color':'rgba(255,255,255,0.5)',
+    'line-width':['interpolate',['linear'],['zoom'],10,0.2,13,0.8],
+    'line-opacity':['interpolate',['linear'],['zoom'],9.5,0,10.5,1]
+  }});
+
+  map.addSource('boroughs',{type:'geojson',data:boroughsData});
+  map.addLayer({id:'bo-fill',type:'fill',source:'boroughs',paint:{
+    'fill-color':['interpolate',['linear'],['coalesce',['get','snow_seasonal_mean'],0],15,'#D6E5F5',25,'#A8C8F0',35,'#6BA3E0',45,'#2B5EA7'],
+    'fill-opacity':['interpolate',['linear'],['zoom'],9.5,0.7,10.5,0]
+  }});
+  map.addLayer({id:'bo-line',type:'line',source:'boroughs',paint:{'line-color':'rgba(0,0,0,0.2)','line-width':2}});
+  map.addLayer({id:'bo-labels',type:'symbol',source:'boroughs',layout:{
+    'text-field':['get','borough_name'],'text-font':['Open Sans Bold','Arial Unicode MS Bold'],
+    'text-size':['interpolate',['linear'],['zoom'],9,12,12,15],
+    'text-transform':'uppercase','text-letter-spacing':0.08
+  },paint:{'text-color':'#1A1A1A','text-halo-color':'rgba(244,241,237,0.85)','text-halo-width':2}});
 
   // Tooltip
-  const popup = new maplibregl.Popup({
-    closeButton: false, closeOnClick: false
-  });
+  const popup=new maplibregl.Popup({closeButton:false,closeOnClick:false});
+  map.on('mousemove',e=>{
+    const bbox=[[e.point.x-5,e.point.y-5],[e.point.x+5,e.point.y+5]];
+    let f=map.queryRenderedFeatures(bbox,{layers:['nb-fill']});
+    if(!f.length)f=map.queryRenderedFeatures(bbox,{layers:['bo-fill']});
+    if(!f.length){map.getCanvas().style.cursor='';popup.remove();return;}
 
-  map.on('mousemove', (e) => {
-    const bbox = [
-      [e.point.x - 10, e.point.y - 10],
-      [e.point.x + 10, e.point.y + 10]
-    ];
-    const features = map.queryRenderedFeatures(bbox, { layers: ['streets-snow'] });
-
-    if (!features.length) {
-      map.getCanvas().style.cursor = '';
-      popup.remove();
-      return;
-    }
-
-    map.getCanvas().style.cursor = 'crosshair';
-    const p = features[0].properties;
-    const snow = (p[activeField] || 0).toFixed(1);
-    const plow = p.is_plow_route ? '<div style="color:#f0b84a;font-size:10px;margin-top:4px">● Plow route</div>' : '';
+    map.getCanvas().style.cursor='pointer';
+    const p=f[0].properties;
+    const name=p.NTAName||p.borough_name||'';
+    const boro=p.BoroName||'';
+    const snow=p[activeField]||p[activeField.replace('snow_','snow_').replace('seasonal','seasonal_mean')]||0;
     popup.setLngLat(e.lngLat).setHTML(`
-      <div style="font-family:IBM Plex Sans,sans-serif;padding:12px 16px;background:#252b33;border:1px solid rgba(180,200,220,0.15);border-radius:10px;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,0.6)">
-        <div style="font-family:IBM Plex Mono,monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#7a90a8;margin-bottom:4px">${p.neighborhood || ''}</div>
-        <div style="font-size:14px;color:#d8e4f0;font-weight:500;margin-bottom:8px">${p.street_name || 'Street'}</div>
-        <div style="font-family:Playfair Display,serif;font-size:30px;color:#6aacdc;line-height:1">${snow}<span style="font-size:14px;color:#8abce0;font-family:IBM Plex Sans,sans-serif">in</span></div>
-        ${plow}
+      <div style="font-family:DM Sans,sans-serif;padding:12px 16px;background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:10px;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,0.1)">
+        <div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#6B6B6B;margin-bottom:4px">${boro}</div>
+        <div style="font-size:14px;color:#1A1A1A;font-weight:500;margin-bottom:8px">${name}</div>
+        <div style="font-family:Playfair Display,serif;font-size:30px;color:#2B5EA7;line-height:1">${parseFloat(snow).toFixed(1)}<span style="font-size:14px;color:#4A7FCA;font-family:DM Sans,sans-serif">in</span></div>
       </div>`).addTo(map);
   });
 }
 
-function updateMap() {
-  if (!map || !map.getLayer('streets-snow')) return;
-  map.setPaintProperty('streets-snow', 'line-color', colorExpr(activeField));
-  map.setPaintProperty('streets-snow', 'line-opacity', opacityExpr(activeField));
+function updateMap(){
+  if(!map||!map.getLayer('nb-fill'))return;
+  map.setPaintProperty('nb-fill','fill-color',colorExpr(activeField));
 }
 
-initMap();
+// ── BOROUGH BARS ──
+function renderBoroughs(){
+  const c=document.getElementById('boroughBars');
+  const bs=boroughsData.features.map(f=>f.properties);
+  const prop=activeField==='snow_seasonal'?'snow_seasonal_mean':`${activeField}_mean`;
+  const mx=Math.max(...bs.map(b=>b[prop]||0));
+  const sorted=[...bs].sort((a,b)=>(b[prop]||0)-(a[prop]||0));
+  c.innerHTML=sorted.map(b=>{
+    const v=b[prop]||0;
+    return`<div class="boro-row">
+      <div class="boro-name">${b.borough_name}</div>
+      <div class="boro-bar-wrap"><div class="boro-bar" style="width:${mx>0?(v/mx*100):0}%"></div></div>
+      <div class="boro-val">${v.toFixed(1)}<span>in</span></div>
+    </div>`;
+  }).join('');
+}
 
-// ── HISTORICAL CHART ──────────────────────────────────────────────────────────
-function buildChart() {
-  const years = HISTORICAL.slice().sort((a, b) => a.start_year - b.start_year);
-  const current = years.find(y => y.is_current);
-  const mean = MEAN_SNOW;
+// ── HISTORICAL CHART (vertical bars) ──
+function renderChart(){
+  const canvas=document.getElementById('histChart');
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.parentElement.getBoundingClientRect();
+  canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;
+  canvas.style.width=rect.width+'px';canvas.style.height=rect.height+'px';ctx.scale(dpr,dpr);
 
-  const containerWidth = document.querySelector('.chart-wrap').offsetWidth || 900;
-  const margin = { top: 24, right: 140, bottom: 16, left: 76 };
-  const width = Math.max(640, containerWidth) - margin.left - margin.right;
-  const barH = 17, gap = 4;
-  const height = years.length * (barH + gap);
+  const W=rect.width,H=rect.height;
+  const pad={top:16,right:16,bottom:40,left:40};
+  const plotW=W-pad.left-pad.right,plotH=H-pad.top-pad.bottom;
+  const yrs=historicalData.years.sort((a,b)=>a.start_year-b.start_year);
+  const mx=Math.max(...yrs.map(y=>y.snow_in))*1.08;
+  const barW=Math.max(2,(plotW/yrs.length)-1.5);
+  const gap=(plotW-barW*yrs.length)/(yrs.length);
 
-  const svg = d3.select('#hist-chart')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
-    .style('font-family', "'IBM Plex Sans', sans-serif");
+  ctx.clearRect(0,0,W,H);
 
-  svg.selectAll('*').remove();
-  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-
-  const x = d3.scaleLinear().domain([0, d3.max(years, d => d.snow_in) * 1.06]).range([0, width]);
-  const y = d3.scaleBand().domain(years.map(d => d.winter)).range([0, height]).padding(0.18);
-
-  // Mean line
-  g.append('line')
-    .attr('x1', x(mean)).attr('x2', x(mean))
-    .attr('y1', -8).attr('y2', height + 8)
-    .attr('stroke', 'rgba(106,172,220,0.2)').attr('stroke-width', 1).attr('stroke-dasharray', '4,3');
-  g.append('text')
-    .attr('x', x(mean) + 5).attr('y', -10)
-    .attr('fill', 'rgba(106,172,220,0.5)').attr('font-size', 9)
-    .attr('font-family', "'IBM Plex Mono', monospace")
-    .text(`avg ${mean}in`);
-
-  // Bars
-  const rows = g.selectAll('.bar-row').data(years).join('g')
-    .attr('transform', d => `translate(0,${y(d.winter)})`);
-
-  rows.append('rect')
-    .attr('width', 0).attr('height', y.bandwidth()).attr('rx', 2)
-    .attr('fill', d => {
-      if (d.is_current) return '#6aacdc';
-      if (d.tier === 'historic') return '#3a82c0';
-      if (d.tier === 'above_avg') return '#2a5a90';
-      if (d.tier === 'average') return '#1e3d60';
-      return '#162840';
-    })
-    .attr('opacity', d => d.is_current ? 1 : [2022,2023].includes(d.start_year) ? 0.85 : 0.65)
-    .transition().duration(600).delay((d, i) => i * 8)
-    .attr('width', d => x(d.snow_in));
-
-  // Labels
-  rows.filter(d => d.is_current).append('text')
-    .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
-    .attr('fill', '#6aacdc').attr('font-size', 11).attr('font-weight', '500')
-    .attr('font-family', "'IBM Plex Mono', monospace")
-    .text(d => `${d.snow_in}in  ← this winter`);
-
-  rows.filter(d => d.rank === 1).append('text')
-    .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
-    .attr('fill', '#c0d8f0').attr('font-size', 10)
-    .attr('font-family', "'IBM Plex Mono', monospace")
-    .text(d => `${d.snow_in}in — all-time record`);
-
-  rows.filter(d => [2,3].includes(d.rank)).append('text')
-    .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
-    .attr('fill', '#8abce0').attr('font-size', 10)
-    .attr('font-family', "'IBM Plex Mono', monospace")
-    .text(d => `${d.snow_in}in  #${d.rank} all-time`);
-
-  rows.filter(d => [2022,2023].includes(d.start_year)).append('text')
-    .attr('x', d => x(d.snow_in) + 7).attr('y', y.bandwidth() / 2 + 4)
-    .attr('fill', '#d05050').attr('font-size', 10)
-    .attr('font-family', "'IBM Plex Mono', monospace")
-    .text(d => `${d.snow_in}in`);
-
-  // Drought bracket
-  const dYears = years.filter(d => [2022,2023].includes(d.start_year));
-  if (dYears.length === 2) {
-    const y1 = y(dYears[0].winter), y2 = y(dYears[1].winter) + y.bandwidth();
-    g.append('rect').attr('x',-5).attr('y',y1-2).attr('width',3).attr('height',y2-y1+4)
-      .attr('fill','#ef4444').attr('rx',2).attr('opacity',0.7);
-    g.append('text').attr('x',-9).attr('y',(y1+y2)/2+4)
-      .attr('fill','#ef4444').attr('font-size',9).attr('text-anchor','end')
-      .attr('font-family',"'IBM Plex Mono', monospace").text('drought');
+  // Y gridlines
+  ctx.strokeStyle='rgba(0,0,0,0.04)';ctx.lineWidth=1;
+  for(let v=0;v<=mx;v+=20){
+    const y=pad.top+plotH-(v/mx*plotH);
+    ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(W-pad.right,y);ctx.stroke();
+    ctx.fillStyle='#999';ctx.font='10px DM Sans';ctx.textAlign='right';
+    ctx.fillText(v+'"',pad.left-6,y+4);
   }
 
-  // Y axis
-  g.append('g').call(d3.axisLeft(y).tickSize(0).tickPadding(8)).select('.domain').remove();
-  g.selectAll('.tick text')
-    .attr('fill', d => d === current.winter ? '#6aacdc' : [2022,2023].map(y=>`${y}-${String(y+1).slice(2)}`).includes(d) ? '#ef4444' : '#4a6280')
-    .attr('font-size', 9).attr('font-family', "'IBM Plex Mono', monospace");
+  // Bars
+  yrs.forEach((yr,i)=>{
+    const x=pad.left+i*(barW+gap);
+    const h=(yr.snow_in/mx)*plotH;
+    const y=pad.top+plotH-h;
+
+    if(yr.is_current){
+      ctx.fillStyle='#2B5EA7';
+    } else if(yr.snow_in>=historicalData.mean_snow*1.5){
+      ctx.fillStyle='rgba(43,94,167,0.35)';
+    } else if(yr.snow_in>=historicalData.mean_snow){
+      ctx.fillStyle='rgba(43,94,167,0.18)';
+    } else {
+      ctx.fillStyle='rgba(0,0,0,0.08)';
+    }
+    ctx.fillRect(x,y,barW,h);
+
+    // Current season label
+    if(yr.is_current){
+      ctx.fillStyle='#2B5EA7';ctx.font='bold 10px DM Mono';ctx.textAlign='center';
+      ctx.fillText(`${yr.snow_in}"`,x+barW/2,y-6);
+      ctx.fillText('↑',x+barW/2,y-16);
+    }
+
+    // Decade labels
+    if(yr.start_year%10===0){
+      ctx.fillStyle='#999';ctx.font='9px DM Mono';ctx.textAlign='center';
+      ctx.fillText(yr.start_year,x+barW/2,H-pad.bottom+16);
+    }
+  });
+
+  // Average line
+  const avgY=pad.top+plotH-(historicalData.mean_snow/mx*plotH);
+  ctx.strokeStyle='#6B6B6B';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(pad.left,avgY);ctx.lineTo(W-pad.right,avgY);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#6B6B6B';ctx.font='10px DM Sans';ctx.textAlign='left';
+  ctx.fillText(`avg ${historicalData.mean_snow}"`,W-pad.right-65,avgY-5);
+
+  // Record label
+  const rec=yrs.reduce((a,b)=>a.snow_in>b.snow_in?a:b);
+  const recI=yrs.indexOf(rec);
+  const recX=pad.left+recI*(barW+gap);
+  const recY=pad.top+plotH-(rec.snow_in/mx*plotH);
+  ctx.fillStyle='rgba(43,94,167,0.5)';ctx.font='9px DM Mono';ctx.textAlign='center';
+  ctx.fillText(`${rec.snow_in}" record`,recX+barW/2,recY-6);
 }
 
-// Build chart on load, rebuild on resize
-window.addEventListener('load', buildChart);
-window.addEventListener('resize', buildChart);
+// ── COMPARE ──
+function renderCompare(){
+  const cur=historicalData.years.find(y=>y.is_current);
+  const rows=[
+    {m:'Season Total',n:stormsData.season_total_in+'"',b:'62.5"'},
+    {m:'Historical Avg',n:historicalData.mean_snow+'"',b:'42.5"'},
+    {m:'All-Time Rank',n:'#'+(cur?cur.rank:'—'),b:'#10'},
+    {m:'Storms',n:stormsData.storms.length,b:'7'},
+    {m:'Areas Mapped',n:neighborhoodsData.features.length,b:'41,000+'}
+  ];
+  const g=document.getElementById('compareGrid');
+  g.innerHTML=`<div class="compare-cell header">Metric</div><div class="compare-cell header" style="color:var(--accent)">NYC</div><div class="compare-cell header" style="color:var(--boston-red)">Boston</div>`+
+    rows.map(r=>`<div class="compare-cell"><div class="metric">${r.m}</div></div><div class="compare-cell"><div class="val nyc">${r.n}</div></div><div class="compare-cell"><div class="val bos">${r.b}</div></div>`).join('');
+}
+
+// ── SNOW ANIMATION ──
+(function(){
+  const cv=document.getElementById('snow-canvas'),ctx=cv.getContext('2d');
+  let W,H,fl=[];
+  function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight;}rs();addEventListener('resize',rs);
+  for(let i=0;i<120;i++)fl.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*2.2+.4,speed:Math.random()*.7+.25,drift:Math.random()*.3-.15,o:Math.random()*.3+.12,w:Math.random()*Math.PI*2,ws:Math.random()*.012+.004});
+  (function draw(){ctx.clearRect(0,0,W,H);fl.forEach(f=>{f.w+=f.ws;f.x+=f.drift+Math.sin(f.w)*.25;f.y+=f.speed;if(f.y>H+10){f.y=-10;f.x=Math.random()*W;}if(f.x>W+10)f.x=-10;if(f.x<-10)f.x=W+10;ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,Math.PI*2);ctx.fillStyle=`rgba(80,120,170,${f.o})`;ctx.fill();});requestAnimationFrame(draw);})();
+})();
+
+// ── INIT ──
+async function init(){
+  await loadData();
+  renderHero();
+  renderStorms();
+  renderBoroughs();
+  renderCompare();
+  initMap();
+  setTimeout(renderChart,400);
+  addEventListener('resize',renderChart);
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+}
+init();
 </script>
 </body>
 </html>
